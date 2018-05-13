@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wishes.yearOld.dao.CommentMapper">
+
+    <!--<resultMap id="comment" type="com.wishes.yearOld.model.Comment">-->
+        <!--<result column="id" property="id"/>-->
+        <!--<result column="fromUserID" property="fromUserId"/>-->
+        <!--<result column="fromUserName" property="fromUserName"/>-->
+        <!--<result column="fromFaceUrl" property="fromFaceUrl"/>-->
+        <!--<result column="toUserId" property="toUserId"/>-->
+        <!--<result column="toUserName" property="toUserName"/>-->
+        <!--<result column="commentType" property="type"/>-->
+        <!--<result column="commentObjId" property="objId"/>-->
+        <!--<result column="content" property="content"/>-->
+        <!--<result column="commentTime" property="commentTime"/>-->
+    <!--</resultMap>-->
+
+    <insert id="insertComment" parameterType="com.wishes.yearOld.model.Comment">
+        INSERT INTO
+        tgod_comment(commentTime,fromUserID,toUserID,commentType,commentObjId,content,hasReferUser,status)
+        values(#{commentTime},#{fromUserId},#{toUserId},#{type},#{objId},#{content},#{hasReferUser},#{status})
+    </insert>
+
+    <select id="selectCommentId" resultType="java.lang.Integer" parameterType="com.wishes.yearOld.model.Comment">
+        select id from tgod_comment where commentTime=#{commentTime} AND fromUserID=#{fromUserId} AND toUserID = #{toUserId} AND commentType = #{type} AND status= #{status}
+    </select>
+
+    <insert id="insertReference" parameterType="com.wishes.yearOld.model.Reference">
+        INSERT INTO
+        tgod_reference(referId,referType,referUserId,content,commentTime,status)
+        values(#{referId},#{referType},#{referUserId},#{content},#{commentTime},#{status})
+    </insert>
+
+    <select id="selectCommentList" parameterType="com.wishes.yearOld.model.Comment" resultType="com.wishes.yearOld.model.Comment">
+        select
+            a.id id,
+            a.fromUserID fromUserId,
+            b.nickname fromUserName,
+            b.face fromFaceUrl,
+            a.toUserID toUserId,
+            c.nickname toUserName,
+            a.commentType type,
+            a.commentObjId objId,
+            a.content content,
+            a.commentTime commentTime
+        FROM tgod_comment AS a
+        JOIN tgod_user AS b ON a.fromUserID = b.id
+        left JOIN tgod_user AS c ON a.toUserID = c.id
+        WHERE a.status=#{status} AND a.commentType= #{type} and a.commentObjId = #{objId}
+        and (c.nickname is not null or a.toUserID=-1)
+        ORDER BY commentTime
+        <if test="desc==1">
+            DESC
+        </if>
+        limit #{start},#{pageSize}
+    </select>
+    
+    <select id="selectTimeLineCommentCount" parameterType="map" resultType="java.lang.Integer">
+        select COUNT(*)
+        FROM tgod_comment AS a
+        JOIN tgod_user AS b ON a.fromUserID = b.id
+        left JOIN tgod_user AS c ON a.toUserID = c.id
+        WHERE a.status=#{status} AND a.commentType= #{type} and a.commentObjId = #{objId}
+        and (c.nickname is not null or a.toUserID=-1)
+    </select>
+
+    <select id="selectCommentById" parameterType="map" resultType="com.wishes.yearOld.model.Comment">
+        select
+        a.id id,
+        a.fromUserID fromUserId,
+        b.nickname fromUserName,
+        b.face fromFaceUrl,
+        a.toUserID toUserId,
+        c.nickname toUserName,
+        a.commentType type,
+        a.commentObjId objId,
+        a.content content,
+        a.commentTime commentTime
+        FROM tgod_comment AS a
+        JOIN tgod_user AS b ON a.fromUserID = b.id
+        left JOIN tgod_user AS c ON a.toUserID = c.id
+        WHERE a.status=#{status} AND a.id = #{referId}
+
+    </select>
+
+    <select id="selectUserComment" parameterType="map" resultType="com.wishes.yearOld.model.Comment">
+        select t.* from ((select
+        a.id id,
+        a.fromUserID fromUserId,
+        b.nickname fromUserName,
+        b.face fromFaceUrl,
+        a.toUserID toUserId,
+        c.nickname toUserName,
+        a.commentType type,
+        a.commentObjId objId,
+        a.content content,
+        a.commentTime commentTime
+        FROM tgod_comment AS a
+        JOIN tgod_user AS b ON a.fromUserID = b.id
+        JOIN tgod_user AS c ON a.toUserID = c.id
+        WHERE a.status=#{status} AND a.toUserID = #{toUserID})
+        UNION (select
+        a.id id,
+        a.fromUserID fromUserId,
+        b.nickname fromUserName,
+        b.face fromFaceUrl,
+        a.toUserID as toUserId,
+        c.nickname as toUserName,
+        a.commentType type,
+        a.commentObjId objId,
+        a.content content,
+        a.commentTime commentTime
+        FROM tgod_comment AS a
+        JOIN tgod_user AS b ON a.fromUserID = b.id
+        LEFT JOIN tgod_user AS c ON a.toUserID = c.id
+        JOIN tgod_timeline l on a.commentType=2 and  a.commentObjId=l.id and l.userId=#{toUserID}
+        WHERE a.status=#{status} and (a.toUserID is null or a.toUserID &lt;&gt; #{toUserID}))
+        <if test="userGroup == 1">
+            UNION (select
+            a.id id,
+            a.fromUserID fromUserId,
+            b.nickname fromUserName,
+            b.face fromFaceUrl,
+            a.toUserID as toUserId,
+            c.nickname as toUserName,
+            a.commentType type,
+            a.commentObjId objId,
+            a.content content,
+            a.commentTime commentTime
+            FROM tgod_comment AS a
+            JOIN tgod_user AS b ON a.fromUserID = b.id
+            LEFT JOIN tgod_user AS c ON a.toUserID = c.id
+            JOIN tgod_photoalbum p on a.commentType=1 and  a.commentObjId=p.id and p.modelID = #{toUserID} and(p.status=3 or p.status=5)
+            WHERE a.status=#{status}
+            AND (a.toUserID is null or a.toUserID &lt;&gt; #{toUserID}))
+        </if>
+        ) t
+        ORDER BY t.commentTime desc
+        limit #{start},#{pageSize}
+    </select>
+
+    <select id="selectUserCommentCount" parameterType="map" resultType="java.lang.Integer">
+        select count(*) from ((select
+        a.id id,
+        a.fromUserID fromUserId,
+        b.nickname fromUserName,
+        b.face fromFaceUrl,
+        a.toUserID toUserId,
+        c.nickname toUserName,
+        a.commentType type,
+        a.commentObjId objId,
+        a.content content,
+        a.commentTime commentTime
+        FROM tgod_comment AS a
+        JOIN tgod_user AS b ON a.fromUserID = b.id
+        JOIN tgod_user AS c ON a.toUserID = c.id
+        WHERE a.status=#{status} AND a.toUserID = #{toUserID}
+        <if test="lastUpdateTime!=null">
+            and a.commentTime > #{lastUpdateTime, jdbcType=TIMESTAMP}
+        </if>
+        )
+        UNION (select
+        a.id id,
+        a.fromUserID fromUserId,
+        b.nickname fromUserName,
+        b.face fromFaceUrl,
+        a.toUserID as toUserId,
+        c.nickname as toUserName,
+        a.commentType type,
+        a.commentObjId objId,
+        a.content content,
+        a.commentTime commentTime
+        FROM tgod_comment AS a
+        JOIN tgod_user AS b ON a.fromUserID = b.id
+        LEFT JOIN tgod_user AS c ON a.toUserID = c.id
+        JOIN tgod_timeline l on a.commentType=2 and  a.commentObjId=l.id and l.userId=#{toUserID}
+        WHERE a.status=#{status}
+        <if test="lastUpdateTime!=null">
+            and a.commentTime > #{lastUpdateTime, jdbcType=TIMESTAMP}
+        </if>
+        and (a.toUserID is null or a.toUserID &lt;&gt; #{toUserID}))
+        <if test="userGroup == 1">
+            UNION (select
+            a.id id,
+            a.fromUserID fromUserId,
+            b.nickname fromUserName,
+            b.face fromFaceUrl,
+            a.toUserID as toUserId,
+            c.nickname as toUserName,
+            a.commentType type,
+            a.commentObjId objId,
+            a.content content,
+            a.commentTime commentTime
+            FROM tgod_comment AS a
+            JOIN tgod_user AS b ON a.fromUserID = b.id
+            LEFT JOIN tgod_user AS c ON a.toUserID = c.id
+            JOIN tgod_photoalbum p on a.commentType=1 and  a.commentObjId=p.id and p.modelID = #{toUserID} and (p.status=3 or p.status=5)
+            WHERE a.status=#{status}
+            <if test="lastUpdateTime!=null">
+                and a.commentTime > #{lastUpdateTime, jdbcType=TIMESTAMP}
+            </if>
+            AND (a.toUserID is null or a.toUserID &lt;&gt; #{toUserID}))
+        </if>
+        ) t
+    </select>
+</mapper>

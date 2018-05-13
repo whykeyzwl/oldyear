@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wishes.yearOld.dao.RecordDownLimitMapper">
+  <resultMap id="BaseResultMap" type="com.wishes.yearOld.model.RecordDownLimit">
+    <constructor>
+      <idArg column="id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="user_id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="activity_id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="model_id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="rule_id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="status" javaType="java.lang.Byte" jdbcType="TINYINT" />
+      <arg column="album_id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="create_time" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <arg column="consume_time" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, user_id, activity_id, model_id, rule_id, status, album_id, create_time, consume_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tgod_records_down_limit
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tgod_records_down_limit
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.wishes.yearOld.model.RecordDownLimit">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into tgod_records_down_limit (user_id, activity_id, model_id, 
+      rule_id, status, album_id, 
+      create_time, consume_time)
+    values (#{userId,jdbcType=INTEGER}, #{activityId,jdbcType=INTEGER}, #{modelId,jdbcType=INTEGER}, 
+      #{ruleId,jdbcType=INTEGER}, #{status,jdbcType=TINYINT}, #{albumId,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{consumeTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wishes.yearOld.model.RecordDownLimit">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into tgod_records_down_limit
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="activityId != null">
+        activity_id,
+      </if>
+      <if test="modelId != null">
+        model_id,
+      </if>
+      <if test="ruleId != null">
+        rule_id,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="albumId != null">
+        album_id,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="consumeTime != null">
+        consume_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userId != null">
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="activityId != null">
+        #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="modelId != null">
+        #{modelId,jdbcType=INTEGER},
+      </if>
+      <if test="ruleId != null">
+        #{ruleId,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="albumId != null">
+        #{albumId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="consumeTime != null">
+        #{consumeTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wishes.yearOld.model.RecordDownLimit">
+    update tgod_records_down_limit
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="activityId != null">
+        activity_id = #{activityId,jdbcType=INTEGER},
+      </if>
+      <if test="modelId != null">
+        model_id = #{modelId,jdbcType=INTEGER},
+      </if>
+      <if test="ruleId != null">
+        rule_id = #{ruleId,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="albumId != null">
+        album_id = #{albumId,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="consumeTime != null">
+        consume_time = #{consumeTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wishes.yearOld.model.RecordDownLimit">
+    update tgod_records_down_limit
+    set user_id = #{userId,jdbcType=INTEGER},
+      activity_id = #{activityId,jdbcType=INTEGER},
+      model_id = #{modelId,jdbcType=INTEGER},
+      rule_id = #{ruleId,jdbcType=INTEGER},
+      status = #{status,jdbcType=TINYINT},
+      album_id = #{albumId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      consume_time = #{consumeTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="checkAlbumPermission" resultType="java.lang.Integer" parameterType="com.wishes.yearOld.model.RecordDownLimit">
+    select count(*)
+    from tgod_records_down_limit
+    where user_id=#{userId} and activity_id=#{activityId} and model_id=#{modelId} and album_id=#{albumId}
+    and status=#{status}
+  </select>
+
+  <select id="getDownLimitCount" resultType="java.lang.Integer" parameterType="com.wishes.yearOld.model.RecordDownLimit">
+    select count(*)
+    from tgod_records_down_limit
+    where user_id=#{userId} and activity_id=#{activityId} and model_id=#{modelId} and status=#{status}
+  </select>
+
+  <select id="getTotalDownLimitCount" resultType="java.lang.Integer" parameterType="com.wishes.yearOld.model.RecordDownLimit">
+    select count(*)
+    from tgod_records_down_limit
+    where user_id=#{userId} and activity_id=#{activityId} and model_id=#{modelId}
+  </select>
+
+  <select id="getDownLimit" resultMap="BaseResultMap" parameterType="com.wishes.yearOld.model.RecordDownLimit">
+    select 
+    id,
+    user_id,
+    activity_id,
+    model_id,
+    rule_id,
+    `status`,
+    album_id,
+    consume_time,
+    download_count
+    from tgod_records_down_limit
+    where user_id=#{userId} and activity_id=#{activityId} and model_id=#{modelId} and status=#{status}
+    limit 1
+  </select>
+</mapper>

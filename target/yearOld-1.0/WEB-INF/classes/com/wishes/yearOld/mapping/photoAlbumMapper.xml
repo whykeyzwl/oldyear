@@ -1,0 +1,893 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wishes.yearOld.dao.PhotoAlbumDao">
+
+    <resultMap id="PhotoAlbum" type="com.wishes.yearOld.model.PhotoAlbum">
+        <id column="ID" property="id"/>
+        <result column="TITLE" property="title"/>
+        <result column="DESCRIPTION" property="description"/>
+        <result column="modelID" property="modelId"/>
+        <result column="modelName" property="modelName"/>
+        <result column="PHOTOGRAPHERID" property="photoGrapherId"/>
+        <result column="PHOTOGRAPHERNAME" property="photoGrapherName"/>
+        <!-- <result column="PRICE1" property="price1"/> -->
+        <result column="downprice" property="downprice"/>
+        <result column="viewprice" property="viewprice"/>
+        <!-- <result column="PHOTOGRAPHERPROFITRATE" property="photoGrapherProfitRate"/> -->
+        <result column="COVER" property="cover"/>
+        <result column="PAGES" property="pages"/>
+        <result column="ZIPLINK" property="ziplink"/>
+        <result column="SALES" property="sales"/>
+        <result column="activityID" property="activityId"/>
+        <result column="STATUS" property="status"/>
+        <result column="createdTime" property="createdTime"/>
+        <result column="publishTime" property="publishTime"/>
+        <result column="UpdateTime" property="lastUpdateTime"/>
+        <result column="CREATOR" property="creator"/>
+        <result column="reviewor" property="reviewer"/>
+        <result column="limitFree" property="limitFree"/>
+        <result column="QINGDOU" property="qingdou"/>
+        <result column="LIKE_COUNT" property="likeCount"/>
+        <result column="VIEW_COUNT" property="viewCount"/> 
+        <result column="RECOMMEND" property="recommend"/>
+       <!--  <result column="REAL_PRICE" property="realPrice"/>
+        <result column="unLockLV1" property="unLockLV1"/> -->
+        <result column="limitFreeTime" property="limitFreeTime"/>
+        <result column="userBeanNums" property="userBeanNums"/>
+        <result column="isCollection" property="isCollection"/>
+        <result column="collectionNums" property="collectionNums"/>
+        <result column="shareNums" property="shareNums"/>
+        <result column="buy" property="buy"/>
+        <result column="face" property="modelFace"/>
+        <result column="controlLevel" property="controlLevel"/>
+        <result column="cert" property="cert"/>
+    </resultMap>
+
+    <resultMap id="Photo" type="com.wishes.yearOld.model.Photo">
+        <id column="ID" property="id"/>
+        <result column="albumId" property="albumid"/>
+        <result column="PAGE" property="page"/>
+        <result column="viewtype" property="viewtype"/>
+        <result column="PATH" property="path"/>
+        <result column="detailInfo" property="detailinfo"/>
+        <result column="FILESIZE" property="filesize"/>
+        <result column="HEIGHT" property="height"/>
+        <result column="WEIGHT" property="weight"/>
+    </resultMap>
+    <!-- 图集信息 -->
+    <resultMap id="photoalbuminfo" type="com.wishes.yearOld.model.Photoalbuminfo">
+        <id column="ID" property="photoalbumId"/>
+        <result column="publishTime" property="time"/>
+        <result column="title" property="title"/>
+        <result column="modelID" property="modelId"/>
+        <result column="modelName" property="modelName"/>
+        <result column="VIEW_COUNT" property="viewCount"/>
+        <result column="PAGES" property="sum"/>
+        <result column="IsQdk" property="IsQdk"/>
+        <result column="LIKE_COUNT" property="like_count"/>
+        <result column="saleranking" property="saleranking"/>
+        <result column="positioninfo" property="positioninfo"/>
+        <result column="is_like" property="is_like"/>
+        <result column="viewprice" property="viewprice"/>
+        <result column="description" property="description"/>
+    </resultMap>
+    <!-- 图片信息 -->
+     <resultMap id="piclist" type="com.wishes.yearOld.model.Piclist">
+        <id column="ID" property="picId"/>
+        <result column="PATH" property="picpath"/>
+    </resultMap>
+    <resultMap id="AlbumViewLog" type="com.wishes.yearOld.model.AlbumViewLog">
+        <id column="ID" property="id"/>
+        <result column="ALBUM_ID" property="albumId"/>
+        <result column="MODEL_ID" property="modelId"/>
+        <result column="PHOTOGRAPHER_ID" property="photoGrapherId"/>
+        <result column="USER_ID" property="userId"/>
+        <result column="VIEW_TIME" property="viewTime"/>
+        <result column="coverUrl" property="coverUrl"/>
+        <result column="modelName" property="modelName"/>
+        <result column="viewDate" property="viewDate"/>
+        <result column="firstPhoto" property="firstPhoto"/>
+    </resultMap>
+
+    <resultMap id="Tag" type="com.wishes.yearOld.model.Tag">
+        <id column="ID" property="id"/>
+        <result column="TAG_NAME" property="tagName"/>
+    </resultMap>
+    
+    <resultMap id="AlbumTag" type="com.wishes.yearOld.model.AlbumTag">
+        <id column="ID" property="id"/>
+        <result column="ALBUM_ID" property="albumId"/>
+        <result column="TAG_ID" property="tagId"/>
+        <result column="COUNT" property="count"/>
+    </resultMap>
+
+    <select id="search" resultMap="PhotoAlbum">
+        <!-- 含关键词时按关键词查询，否则按其它情况查询 -->
+        <if test="keyword != null and keyword != ''">
+            select r.*,@rowNum :=0 from (
+                select *,@rowNum:=@rowNum+1 as rowNo from tgod_photoalbum where title = '${keyword}' and status=3 union
+                select *,@rowNum:=@rowNum+1 as rowNo from tgod_photoalbum where description = '${keyword}' and status=3 union
+                select *,@rowNum:=@rowNum+1 as rowNo from tgod_photoalbum where modelName = '${keyword}' and status=3 union
+                select *,@rowNum:=@rowNum+1 as rowNo from tgod_photoalbum where title like '%${keyword}%' and status=3 union
+                select *,@rowNum:=@rowNum+1 as rowNo from tgod_photoalbum where description like '%${keyword}%' and status=3 union
+                select *,@rowNum:=@rowNum+1 as rowNo from tgod_photoalbum where modelName like '%${keyword}%' and status=3
+            ) r
+            INNER JOIN tgod_user u ON (u.user_group = 1 AND u.id = r.modelID )
+            group by r.id order by r.rowNo
+        </if>
+        <if test="keyword == null or keyword == ''">
+            SELECT r.* FROM tgod_photoalbum r
+            INNER JOIN tgod_user u ON (u.user_group = 1 AND u.id = r.modelID)
+            where r.status=3
+                <if test="modelId != null">
+                    and r.modelid=#{modelId}
+                </if>
+                <if test="sortType == 1">
+                    and r.recommend = 1 order by r.recommendTime desc
+                </if>
+                <if test="sortType == 2">
+                    order by r.publishtime desc
+                </if>
+                <if test="sortType == 3">
+                    and r.publishtime &gt;= date_sub(curdate(), interval 2 month) order by r.sales desc,r.publishtime desc
+                </if>
+                <if test="sortType == 4">
+                    and (r.limitfree=1 OR r.price3 = 0) order by r.publishtime desc
+                </if>
+        </if>
+         limit #{start},#{pageSize}
+    </select>
+
+    <select id="detail" resultMap="PhotoAlbum">
+        SELECT 
+        r.id,
+        r.title,
+        r.description,
+        r.modelID,
+        r.modelName,
+        r.photographerID,
+        r.photographerName,
+        r.viewprice,
+        r.downprice,
+        r.constId,
+        r.pages,
+        r.ziplink,
+        r.AuditFlag,
+        r.status,
+        r.sell_no,
+        r.zipFileSize,
+        r.zipFileDesp,
+        r.level,
+        r.type,
+        r.editor,
+        r.reviewor,
+        r.creator,
+        r.UpdateTime,
+        r.reviewTime,
+        r.publishTime,
+        r.createdTime,
+        r.IsQdk,
+        r.positioninfo,
+        r.albumType,
+        r.roleid,
+        r.rolename,
+        r.vipPrice,
+        r.limitFree,
+        r.recommend,
+        r.qingdou,
+        r.activityID,
+        r.limitFreetime,
+        r.recommendTime,
+        r.cover,
+        t.view_count,
+        t.sales,
+        t.like_count,
+        t.downcount,
+        t.click_count
+        FROM 
+        tgod_photoalbum r left join tgod_albumcountinfo t
+        on r.id =t.id
+        INNER JOIN tgod_user u ON (u.user_group = 1 AND u.id = r.modelID )
+        WHERE r.id=#{id}
+    </select>
+
+    <select id="queryPhotoAlbums" parameterType="com.wishes.yearOld.model.PhotoAlbum" resultMap="PhotoAlbum">
+        SELECT 
+        r.id,
+        r.title,
+        r.description,
+        r.modelID,
+        r.modelName,
+        r.photographerID,
+        r.photographerName,
+        r.viewprice,
+        r.downprice,
+        r.constId,
+        r.pages,
+        r.ziplink,
+        r.AuditFlag,
+        r.status,
+        r.sell_no,
+        r.zipFileSize,
+        r.zipFileDesp,
+        r.level,
+        r.type,
+        r.editor,
+        r.reviewor,
+        r.creator,
+        r.UpdateTime,
+        r.reviewTime,
+        r.publishTime,
+        r.createdTime,
+        r.IsQdk,
+        r.positioninfo,
+        r.albumType,
+        r.roleid,
+        r.rolename,
+        r.vipPrice,
+        r.limitFree,
+        r.recommend,
+        r.qingdou,
+        r.activityID,
+        r.limitFreetime,
+        r.recommendTime,
+        r.cover,
+        t.view_count,
+        t.sales,
+        t.like_count,
+        t.downcount,
+        t.click_count
+        FROM 
+        tgod_photoalbum r left join tgod_albumcountinfo t
+        on r.id =t.id
+        INNER JOIN tgod_user u ON (u.user_group = 1 AND u.id = r.modelID)
+        <include refid="PhotoalbumWhere"/>
+        <if test="sortField != null and sortField != ''">
+            order by ${sortField} ${sortType}
+        </if>
+        <if test="pageSize &gt; 0">
+            limit #{start}, #{pageSize}
+        </if>
+    </select>
+
+    <select id="getHomeAlbums" parameterType="com.wishes.yearOld.model.PhotoAlbum" resultMap="PhotoAlbum">
+        SELECT t.*,u.face face,c.description AS cert,f.view_count,f.sales,f.like_count,f.downcount,f.click_count from tgod_photoalbum t
+         left join  tgod_albumcountinfo f on t.id=f.id
+        INNER JOIN tgod_user u ON (u.user_group = 1 AND u.id = t.modelID )
+        LEFT JOIN tgod_certification c ON u.certification = c.id
+        where t.status = 1
+      <!--   AND (
+        t.recommend = 1
+        OR (t.limitfree = 1 OR t.price3 = 0)
+        ) -->
+        <if test="controlLevel == 0">
+        and t.level <![CDATA[>=]]> #{controlLevel}
+        </if> 
+         <if test="controlLevel != 0">
+        and t.level <![CDATA[=]]> #{controlLevel}
+        </if> 
+        <!-- 注释条件显示所有图集不管是买过还是没有买过的图集 -->
+       <!--  <if test="userId != 0">
+        and t.id not in (select o.album_id from tgod_order o where o.order_type = 1 and o.status = 3
+        and o.buyer_id = #{userId})
+        </if> -->
+        <if test="sortField =='view_count'">
+            order by f.${sortField} ${sortType}
+        </if>
+        <if test="sortField != null and sortField != '' and sortField != 'view_count'">
+            order by t.${sortField} ${sortType}
+        </if>
+        <if test="pageSize &gt; 0">
+            limit #{start}, #{pageSize}
+        </if>
+        
+    </select>
+    
+     <!-- 获取首页最热图 -->
+    <select id="getHomeAlbumsHot" parameterType="com.wishes.yearOld.model.PhotoAlbum" resultMap="PhotoAlbum">
+        SELECT t.*,u.face face,c.description AS cert from tgod_photoalbum t
+        left join  tgod_albumcountinfo f on t.id=f.id
+        INNER JOIN tgod_user u ON (u.user_group = 1 AND u.id = t.modelID )
+        LEFT JOIN tgod_certification c ON u.certification = c.id
+        where t.status = 1
+         AND (
+        t.recommend = 1
+        OR (t.limitfree = 1 OR t.price3 = 0)
+        ) 
+        <if test="controlLevel == 0">
+        and t.level <![CDATA[>=]]> #{controlLevel}
+        </if> 
+         <if test="controlLevel != 0">
+        and t.level <![CDATA[=]]> #{controlLevel}
+        </if>
+        <!-- 注释条件显示所有图集不管是买过还是没有买过的图集 -->
+       <!--  <if test="userId != 0">
+        and t.id not in (select o.album_id from tgod_order o where o.order_type = 1 and o.status = 3
+        and o.buyer_id = #{userId})
+        </if> -->
+        <if test="sortField =='view_count'">
+            order by f.${sortField} ${sortType}
+        </if>
+        <if test="sortField != null and sortField != '' and sortField != 'view_count'">
+            order by t.${sortField} ${sortType}
+        </if>
+        <if test="pageSize &gt; 0">
+            limit #{start}, #{pageSize}
+        </if>
+        
+    </select>
+  
+    <!-- 随机取一条推荐数据 -->
+    <select id="getHomeAlbumsRand" parameterType="com.wishes.yearOld.model.PhotoAlbum" resultMap="PhotoAlbum">
+        SELECT t.*,u.face,f.view_count,f.sales,f.like_count,f.downcount,f.click_count from tgod_photoalbum t
+        left join  tgod_albumcountinfo f on t.id=f.id
+        INNER JOIN tgod_user u ON (u.user_group = 1 AND u.id = t.modelID )
+        where t.status = 1
+        <!-- AND (t.recommend = 1 OR (t.limitfree = 1 OR t.price3 = 0)) -->
+        <if test="controlLevel == 0">
+        and t.level <![CDATA[>=]]> #{controlLevel}
+        </if> 
+        <if test="controlLevel != 0">
+        and t.level <![CDATA[=]]> #{controlLevel}
+        </if> 
+        <if test="userId != 0">
+            and t.id not in (select o.album_id from tgod_order o where o.order_type = 1 and o.status = 1
+            and o.buyer_id = #{userId})
+        </if>
+        ORDER BY RAND() limit 1
+    </select>
+
+    <!-- 根据模特ID取得图集封面 -->
+    <select id="queryCoverByAlbumId" resultType="java.util.HashMap">
+        SELECT p.path as cover from tgod_photoalbum t
+        INNER JOIN tgod_user u ON (u.user_group = 1 AND u.id = t.modelID)
+        INNER JOIN tgod_photo p on p.albumId = t.id
+        where t.id = #{albumId} and p.page=5 GROUP BY p.albumId ORDER BY p.page
+    </select>
+
+    <sql id="PhotoalbumWhere">
+        <where>
+            r.status = 1
+            <if test="id != null">
+                and r.id = #{id}
+            </if>
+            <if test="title != null and title != ''">
+                and r.title = #{title}
+            </if>
+            <if test="modelId != null">
+                and r.modelID = #{modelId}
+            </if>
+            <if test="photoGrapherId != null">
+                and r.photographerID = #{photoGrapherId}
+            </if>
+            <if test="activityID != null">
+                and r.activityiD = #{activityID}
+            </if>
+            <if test="limitFree != null">
+                <if test="limitFree == 1">
+                    and (r.limitFree = #{limitFree} or r.price3 = 0)
+                </if>
+                <if test="limitFree != 1">
+                    and r.limitFree = #{limitFree}
+                </if>
+            </if>
+            <if test="recommend != null">
+                and r.recommend = #{recommend}
+            </if>
+        </where>
+    </sql>
+
+    <select id="photoinfo" resultMap="Photo">
+        select id, albumId, page, 
+          viewtype, path, 
+          height, weight, big_image, exif
+          from tgod_photo where albumId = #{albumId} order by viewtype,page limit #{page},1
+    </select>
+
+    <select id="lastestView" resultMap="AlbumViewLog">
+        select * from
+        (select log.album_id, log.model_id,log.photographer_id,log.view_time,date(log.view_time) as viewDate,p.modelName,
+        p.cover as coverUrl,photo.path as firstPhoto
+        from tgod_album_view_log log
+        join tgod_photoalbum p on p.id=log.album_id
+        INNER JOIN tgod_user u ON (u.user_group = 1 AND u.id = p.modelID )
+        left join tgod_photo photo on p.id=photo.albumId and photo.page=1
+        where user_id = #{userId} order by view_time desc) t
+        group by t.album_id order by t.view_time desc
+        limit #{start},#{pageSize}
+    </select>
+
+    <update id="updateViewCount">
+        update tgod_albumcountinfo SET
+        view_count = view_count + 1
+        where id=#{albumId}
+    </update>
+
+    <select id="selectViewCount" resultType="java.lang.Integer">
+        select view_count from tgod_albumcountinfo
+        where id=#{albumId}
+    </select>
+
+    <select id="selectIsLikeAlbum" resultType="com.wishes.yearOld.model.GodViewLikeVO">
+        SELECT id,userId,likeId,likeType  from tgod_users_like where userId = #{userId} and likeId = #{likeId} and likeType = #{likeType}
+    </select>
+
+    <select id="selectIsCollectionAlbum" resultType="com.wishes.yearOld.model.GodViewLikeVO">
+        SELECT id,userId,collectionId,collectionType from tgod_user_collection where userId =#{userId} and collectionId = #{likeId} and collectionType = #{likeType}
+    </select>
+
+
+    <update id="updateAlbumUp" parameterType="com.wishes.yearOld.model.GodViewLikeVO">
+        UPDATE tgod_albumcountinfo SET like_count = like_count + 1 where id = #{likeId}
+    </update>
+
+    <insert id="insertViewLike" parameterType="com.wishes.yearOld.model.GodViewLikeVO">
+         INSERT INTO tgod_users_like(userId,likeId,likeType,createTime) VALUES(#{userId},#{likeId},#{likeType},#{createTime})
+    </insert>
+
+    <insert id="collectionUpAlbum" parameterType="com.wishes.yearOld.model.GodViewLikeVO">
+        INSERT INTO tgod_user_collection(userId,collectionId,collectionType,createTime) VALUES(#{userId},#{likeId},#{likeType},#{createTime})
+    </insert>
+
+    <update id="updateAlbumDown" parameterType="com.wishes.yearOld.model.GodViewLikeVO">
+        UPDATE tgod_albumcountinfo SET like_count = like_count - 1 where id = #{likeId}
+    </update>
+
+    <delete id="deleteViewLike" parameterType="com.wishes.yearOld.model.GodViewLikeVO">
+        DELETE FROM tgod_users_like where userId = #{userId} AND likeId = #{likeId} AND likeType = #{likeType}
+    </delete>
+
+    <delete id="collectionDownAlbum" parameterType="com.wishes.yearOld.model.GodViewLikeVO">
+        DELETE FROM tgod_user_collection where id = #{id} AND userId = #{userId}
+    </delete>
+
+    <select id="selectAlbumLikeCount" resultType="java.lang.Integer">
+        select like_count from tgod_albumcountinfo where id=#{albumId}
+    </select>
+
+    <select id="photos" resultMap="Photo">
+        select 
+        id,
+        albumId,
+        page,
+        viewtype,
+        path,
+        filesize,
+        height,
+        weight,
+        big_image,
+        exif,
+        figure_flag,
+        detailInfo 
+        from tgod_photo 
+        where albumId = #{albumId} 
+        order by viewtype,page
+    </select>
+
+    <select id="tags" resultMap="Tag">
+        select 
+        tgod_tag.id,
+        tgod_tag.tag_name
+        from tgod_album_tag
+        join tgod_tag on tgod_album_tag.tag_id=tgod_tag.id
+        where tgod_album_tag.album_id = #{albumId}
+        order by tgod_album_tag.count desc limit 3;
+    </select>
+
+    <select id="randomTags" resultMap="Tag">
+        select 
+        id,
+        tag_name,
+        status,
+        heat
+        from 
+        tgod_tag 
+        limit #{start},#{pageSize}
+    </select>
+
+    <select id="loadTagByName" resultMap="Tag" parameterType="java.lang.String">
+        select 
+        id,
+        tag_name,
+        status,
+        heat
+        from tgod_tag 
+        where 
+        tag_name=#{tag_name}
+    </select>
+
+    <insert id="insertTag" parameterType="com.wishes.yearOld.model.Tag"  useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO tgod_tag(tag_name) VALUES(#{tagName})
+    </insert>
+
+    <select id="queryAlbumTag" resultMap="AlbumTag">
+        select 
+        id,
+        album_id,
+        tag_id,
+        count 
+        from 
+        tgod_album_tag 
+        where 
+        album_id = #{albumId} and tag_id = #{tagId}
+    </select>
+
+    <update id="incAlbumTagCount" parameterType="java.lang.Integer">
+        update tgod_album_tag set `count`=`count`+1 where id=#{id}
+    </update>
+
+    <insert id="insertAlbumTag" parameterType="com.wishes.yearOld.model.AlbumTag">
+        INSERT INTO tgod_album_tag (album_id,tag_id) values (#{albumId},#{tagId});
+    </insert>
+
+    <insert id="insertViewLog" parameterType="com.wishes.yearOld.model.AlbumViewLog">
+        INSERT INTO tgod_album_view_log(user_id,album_id,model_id,photographer_id,view_time) VALUES(#{userId},#{albumId},#{modelId},#{photoGrapherId},#{viewTime})
+    </insert>
+
+    <select id="queryAlbums" resultMap="PhotoAlbum">
+    SELECT
+        r.id,
+        r.title,
+        r.description,
+        r.modelID,
+        r.modelName,
+        r.photographerID,
+        r.photographerName,
+        r.viewprice,
+        r.downprice,
+        r.constId,
+        r.pages,
+        r.ziplink,
+        r.AuditFlag,
+        r.status,
+        r.sell_no,
+        r.zipFileSize,
+        r.zipFileDesp,
+        r.level,
+        r.type,
+        r.editor,
+        r.reviewor,
+        r.creator,
+        r.UpdateTime,
+        r.reviewTime,
+        r.publishTime,
+        r.createdTime,
+        r.IsQdk,
+        r.positioninfo,
+        r.albumType,
+        r.roleid,
+        r.rolename,
+        r.vipPrice,
+        r.limitFree,
+        r.recommend,
+        r.qingdou,
+        r.activityID,
+        r.limitFreetime,
+        r.recommendTime,
+        r.cover
+        FROM tgod_photoalbum r
+        left join tgod_albumcountinfo t on (r.id =t.id)
+        INNER JOIN tgod_user u ON (u.user_group = 1 AND u.id = r.modelID   )
+           <where>
+            r.status = 1
+            <if test="activityId != null">
+                and r.activityID = #{activityId}
+            </if>
+            <if test="modelId != null">
+                and r.modelID = #{modelId}
+            </if>
+        </where>
+        order by t.sales limit #{start},#{pageSize}        
+    </select>
+    
+    <!-- 查询图集数据 -->
+    <select id="queryBuminfo"    resultMap="photoalbuminfo">
+        SELECT 
+        T1.id,
+        T1.createdTime as publishTime,
+        T1.pages,
+        T1.IsQdk IsQdk,
+        T2.like_count,
+        T2.view_count,
+        '80%' saleranking,
+        T1.positioninfo positioninfo, 
+        T1.TITLE,
+        T1.description,
+        T1.MODELID,
+        T1.modelName,
+        T1.viewprice,
+        (case 
+            WHEN 
+            cast(T2.like_count as unsigned int)>0
+            THEN '1'
+            ELSE '2'
+            END) as is_like
+        FROM tgod_photoalbum T1 left join tgod_albumcountinfo T2
+        on T1.id=T2.id
+        
+        <where>
+            1=1
+           <if test="modelId != null and modelId != ''">
+                and T1.modelID = #{modelId}
+            </if>  
+            <if test="photoalbumId != null and photoalbumId != ''">
+                and T1.id = #{photoalbumId}
+            </if>
+           
+            
+        </where>
+        order by T1.createdTime desc
+         <if test="pageSize != 0">
+            limit #{start}, #{pageSize}
+          </if>
+    </select>
+    <!-- 查询图图片信息 -->
+    <select id="queryPiclist"  resultMap="piclist">
+        SELECT ID,
+        CONCAT_WS('','http://47.95.207.69',PATH) PATH
+        FROM tgod_photo 
+       
+        <where>
+            
+            <if test="photoalbumId != null">
+                and albumId = #{photoalbumId}
+            </if>
+         
+        </where>
+      order by page   LIMIT   6 
+    </select>
+     <select id="queryPiclistAll"  resultMap="piclist">
+        SELECT ID,
+        CONCAT_WS('','http://47.95.207.69',PATH) PATH
+        FROM tgod_photo 
+       
+        <where>
+            
+            <if test="photoalbumId != null">
+                and albumId = #{photoalbumId}
+            </if>
+         
+        </where>
+      order by page   
+    </select>
+    <insert id="insertSelective" parameterType="com.wishes.yearOld.model.PhotoAlbum">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into tgod_photoalbum
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+    <if test="title != null">
+        title,
+      </if>
+      
+      <if test="modelId != null">
+        modelID,
+      </if>
+     <if test="modelName != null">
+        modelName,
+      </if> 
+      <if test="createdTime != null">
+        createdTime,
+      </if>
+      <if test="publishTime != null">
+        publishTime,
+      </if>
+      <if test="lastUpdateTime != null">
+       UpdateTime,
+      </if>     
+      <if test="description != null">
+        description,
+      </if>
+      
+      <if test="positioninfo != null">
+        positioninfo,
+      </if>
+      <if test="pages != null">
+        pages,
+      </if>
+      <if test="isQdk != null">
+        isQdk
+      </if>
+     
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="title != null">
+        #{title,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="modelId != null">
+        #{modelId,jdbcType=INTEGER},
+      </if>
+      <if test="modelName != null">
+        #{modelName,jdbcType=INTEGER},
+      </if>
+      <if test="createdTime != null">
+        #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+     <if test="publishTime != null">
+        #{publishTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastUpdateTime != null">
+        #{lastUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="positioninfo != null">
+       #{positioninfo,jdbcType=VARCHAR},
+      </if>
+      <if test="pages != null">
+       #{pages,jdbcType=INTEGER},
+      </if>
+      <if test="isQdk != null">
+        #{isQdk,jdbcType=INTEGER}
+      </if>
+      
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wishes.yearOld.model.PhotoAlbum">
+    update tgod_photoalbum
+    <set>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="modelid != null">
+        modelID = #{modelid,jdbcType=INTEGER},
+      </if>
+      <if test="modelname != null">
+        modelName = #{modelname,jdbcType=VARCHAR},
+      </if>
+      <if test="photographerid != null">
+        photographerID = #{photographerid,jdbcType=INTEGER},
+      </if>
+      <if test="photographername != null">
+        photographerName = #{photographername,jdbcType=VARCHAR},
+      </if>
+      <if test="viewprice != null">
+        viewprice = #{viewprice,jdbcType=DECIMAL},
+      </if>
+      <if test="downprice != null">
+        downprice = #{downprice,jdbcType=DECIMAL},
+      </if>
+     
+      <if test="photographerprofitrate != null">
+        photographerProfitRate = #{photographerprofitrate,jdbcType=DECIMAL},
+      </if>
+      <if test="cover != null">
+        cover = #{cover,jdbcType=VARCHAR},
+      </if>
+      <if test="pages != null">
+        pages = #{pages,jdbcType=INTEGER},
+      </if>
+      <if test="ziplink != null">
+        ziplink = #{ziplink,jdbcType=VARCHAR},
+      </if>
+      <if test="sales != null">
+        sales = #{sales,jdbcType=INTEGER},
+      </if>
+      <if test="activityid != null">
+        activityID = #{activityid,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="createdtime != null">
+        createdTime = #{createdtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="publishtime != null">
+        publishTime = #{publishtime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="lastupdatetime != null">
+        lastUpdateTime = #{lastupdatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="reviewTime != null">
+        reviewTime = #{reviewTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="creator != null">
+        creator = #{creator,jdbcType=VARCHAR},
+      </if>
+      <if test="reviewer != null">
+        reviewer = #{reviewer,jdbcType=VARCHAR},
+      </if>
+      <if test="limitfree != null">
+        limitFree = #{limitfree,jdbcType=TINYINT},
+      </if>
+      <if test="recommend != null">
+        recommend = #{recommend,jdbcType=TINYINT},
+      </if>
+      <if test="qingdou != null">
+        qingdou = #{qingdou,jdbcType=INTEGER},
+      </if>
+      <if test="likeCount != null">
+        like_count = #{likeCount,jdbcType=INTEGER},
+      </if>
+      <if test="viewCount != null">
+        view_count = #{viewCount,jdbcType=INTEGER},
+      </if>
+      <if test="realPrice != null">
+        real_price = #{realPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="unlockLV1 != null">
+        unlockLV1 = #{unlockLV1,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null">
+        level = #{level,jdbcType=INTEGER},
+      </if>
+      <if test="controlLevel == 0">
+        controlLevel <![CDATA[>=]]> #{controlLevel,jdbcType=INTEGER},
+      </if>
+       <if test="controlLevel != 0">
+        controlLevel <![CDATA[=]]> #{controlLevel,jdbcType=INTEGER},
+      </if>
+      <if test="profitTotal != null">
+        profitTotal = #{profitTotal,jdbcType=DECIMAL},
+      </if>
+      <if test="modelProfitTotal != null">
+        modelProfitTotal = #{modelProfitTotal,jdbcType=DECIMAL},
+      </if>
+      <if test="photographerProfitTotal != null">
+        photographerProfitTotal = #{photographerProfitTotal,jdbcType=DECIMAL},
+      </if>
+      <if test="siteProfitTotal != null">
+        siteProfitTotal = #{siteProfitTotal,jdbcType=DECIMAL},
+      </if>
+      <if test="organProfitTotal != null">
+        organProfitTotal = #{organProfitTotal,jdbcType=DECIMAL},
+      </if>
+      <if test="recommendTime != null">
+        recommendTime = #{recommendTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+    <update id="updateAlbumSales" parameterType="java.lang.Integer">
+        UPDATE tgod_photoalbum SET sales = sales +1 where id = #{id}
+    </update>
+
+    <select id="queryAlbumStar" resultType="java.lang.Double">
+        select avg(star) from tgod_user_album_log where albumId = #{albumId}
+    </select>
+
+    <select id="queryAlbumStarByUserId" resultType="int">
+        select count(1) from tgod_user_album_log where albumId = #{albumId} and userId = #{userId}
+    </select>
+
+    <select id="queryAlbumByPrimaryId" resultMap="PhotoAlbum">
+        select t.*,u.face as face,
+        <if test="userID != 0">
+            (select u.qingdou from tgod_usercountinfo u WHERE u.id = #{userID}) as userBeanNums,
+            CASE when (select count(1) from tgod_user_collection c where c.userId = #{userID}
+            and c.collectionType = 2 and c.collectionId =#{albumId}) > 0 then 1
+            else 0 end as isCollection,
+        </if>
+        <if test="userID == 0">
+            0 as userBeanNums,
+            0 as isCollection,
+        </if>
+        (select count(1) from tgod_user_collection co where co.collectionType = 2
+        and co.collectionId =#{albumId}) as collectionNums,
+        (SELECT count(1) FROM tgod_records_qingdou re where re.rec_type=2
+        and re.album_id=#{albumId}) as shareNums,
+        <if test="userID != 0">
+            (case
+              WHEN (
+            (select count(1) from tgod_order o where o.album_id=#{albumId} and o.order_type = 1 and o.status = 3
+            and o.buyer_id = #{userID})>0 OR
+            (select count(1) from tgod_records_qingdou q where q.rec_type=3 and q.album_id = #{albumId}
+            and q.user_id =#{userID}) >0)
+            THEN 1
+            ELSE 0
+            END
+            ) as buy
+        </if>
+        <if test="userID == 0">
+         0 as buy
+        </if>
+        from tgod_photoalbum t
+        INNER JOIN tgod_user u ON (u.user_group = 1 AND u.id = t.modelID)
+        where t.id=#{albumId}
+    </select>
+</mapper>

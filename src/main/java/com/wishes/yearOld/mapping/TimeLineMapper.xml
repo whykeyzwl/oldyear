@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wishes.yearOld.dao.TimeLineMapper">
+
+  <insert id="insertSelective" parameterType="com.wishes.yearOld.model.TimeLine">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into tgod_timeline
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="userid != null">
+        userId,
+      </if>
+      <if test="contentType != null">
+        content_type,
+      </if>
+      <if test="albumid != null">
+        albumId,
+      </if>
+      <if test="createdTime != null">
+        created_time,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="userid != null">
+        #{userid,jdbcType=INTEGER},
+      </if>
+      <if test="contentType != null">
+        #{contentType,jdbcType=TINYINT},
+      </if>
+      <if test="albumid != null">
+        #{albumid,jdbcType=INTEGER},
+      </if>
+      <if test="createdTime != null">
+        #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="selectIsLikeTimeLine" resultType="com.wishes.yearOld.model.GodViewLikeVO">
+      SELECT id,userId,likeId,likeType  from tgod_users_like where userId = #{userId} and likeId = #{likeId} and likeType = #{likeType}
+  </select>
+  
+  <select id="selectTimeLineLikeCount" resultType="java.lang.Integer" parameterType="com.wishes.yearOld.model.GodViewLikeVO">
+      select count(1) count from tgod_users_like where likeId=#{likeId} and likeType=#{likeType}
+  </select>
+  
+  <delete id="giveDownTimeLine" parameterType="com.wishes.yearOld.model.GodViewLikeVO">
+      DELETE FROM tgod_users_like where userId = #{userId} AND likeId = #{likeId} AND likeType = #{likeType}
+  </delete>
+
+  <insert id="giveUpTimeLine" parameterType="com.wishes.yearOld.model.GodViewLikeVO">
+      INSERT INTO tgod_users_like(userId,likeId,likeType,createTime) VALUES(#{userId},#{likeId},#{likeType},#{createTime})
+  </insert>
+  
+  <select id="detailLikeUsers" parameterType="map" resultType="com.wishes.yearOld.model.User">
+    select b.id id,b.face face, b.nickname nickname
+    from tgod_users_like a,tgod_user b where a.userId=b.id and a.likeId=#{likeId}
+    ORDER BY a.createTime
+    limit #{start},#{pageSize}
+  </select>
+
+  <select id="listTimeLine" parameterType="map" resultType="com.wishes.yearOld.model.TimeLineVO">
+    select t.id,t.userId,u.nickname as nickName,u.face,t.content_type contentType,t.content,t.albumId,t.created_time createdTime
+    from tgod_timeline t
+    JOIN tgod_user u on u.id = t.userId
+    <if test="focus == 1">
+      JOIN tgod_focus_users f on f.focusId = t.userId and f.userId = #{userId} and f.focusType=0
+    </if>
+    where t.status = #{status}
+    <if test="focus != 1">
+      and t.userId = #{userId}
+    </if>
+    order by t.createdTime desc
+    limit #{start}, #{pageSize}
+  </select>
+  
+  <select id="listTimeLinePhoto" resultType="java.lang.String" parameterType="java.lang.Integer">
+      select imageUrl from tgod_timeline_photo where timelineId = #{timelineId} ORDER BY imageNo
+  </select>
+
+  <select id="selectTimeLineCommentCount" parameterType="map" resultType="java.lang.Integer">
+      select count(1) FROM  tgod_comment where commentType = #{commentType} AND commentObjId = #{commentObjId} AND status = #{status}
+  </select>
+  
+  <select id="readTimeLine" parameterType="java.lang.Integer" resultType="com.wishes.yearOld.model.TimeLineVO">
+    select t.id,t.userId,u.nickname as nickName,u.face,t.content_type contentType,t.content,t.albumId,t.created_time createdTime
+    from tgod_timeline t
+    JOIN tgod_user u on u.id = t.userId
+    where t.id = #{timelineId}
+  </select>
+  
+  <select id="selectLikeUsers" parameterType="com.wishes.yearOld.model.GodViewLikeVO" resultType="com.wishes.yearOld.model.User">
+      select b.id id,b.face face,b.nickname nickname from tgod_users_like a , tgod_user b
+      where a.userId = b.id and a.likeId=#{likeId} and a.likeType = #{likeType} order by a.createTime
+      <if test="likeNum > 0">
+        limit 0,#{likeNum}
+      </if>
+  </select>
+
+  <select id="selectComments" parameterType="map" resultType="com.wishes.yearOld.model.Comment">
+    select
+    a.id id,
+    a.fromUserID fromUserId,
+    b.nickname fromUserName,
+    b.face fromFaceUrl,
+    a.toUserID toUserId,
+    c.nickname toUserName,
+    a.commentType type,
+    a.commentObjId objId,
+    d.content content,
+    d.commentTime commentTime
+    FROM tgod_comment AS a
+    JOIN tgod_user AS b ON a.fromUserID = b.id
+    JOIN tgod_user AS c ON a.toUserID = c.id
+    join tgod_reference AS d ON a.id = d.referId
+    AND a.status=#{status} AND a.commentType= #{type} AND a.commentObjId = #{timelineId}
+    ORDER BY d.commentTime DESC
+    <if test="commentNum >0">
+      limit 0,#{commentNum}
+    </if>
+  </select>
+
+  <select id="selectById" resultType="java.lang.Integer">
+    select count(id) from tgod_timeline where id=#{timelineId}
+  </select>
+</mapper>

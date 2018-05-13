@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wishes.yearOld.dao.SaleMapper">
+
+    <resultMap id="tradeRecordMap" type="com.wishes.yearOld.model.UserTradeRecord">
+        <id column="id"  property="id" />
+        <result column="sales_record_id"  property="salesRecordId" />
+        <result column="record_time"  property="recordTime"/>
+        <result column="amount"  property="amount"/>
+        <result column="description"  property="description"/>
+        <result column="photoalbumID"  property="photoalbumID"/>
+        <result column="photoalbumCover"  property="photoalbumCover"/>
+        <result column="saleId"  property="salesRecord.id"/>
+        <result column="salesType"  property="salesRecord.salestype"/>
+        <result column="currencyType"  property="salesRecord.currencytype"/>
+        <result column="payType"  property="salesRecord.paytype"/>
+        <result column="photoalbumTitle"  property="photoalbumTitle"/>
+        <result column="orderId" property="salesRecord.orderId"/>
+    </resultMap>
+
+
+    <select id="userLastRecord" parameterType="map" resultMap="tradeRecordMap">
+        select t.id,t.userid,t.sales_record_id, t.record_time,t.amount,t.description,t.photoalbumID,t.photoalbumCover,album.title photoalbumTitle
+        from tgod_user_trade_record t,tgod_photoalbum album where t.photoalbumID = album.id and t.userid = #{userid} order by t.record_time desc limit #{begin} ,#{end}
+    </select>
+
+    <select id="getTradeRecordDetail" parameterType="int" resultMap="tradeRecordMap">
+        select t.id,t.userid,t.sales_record_id, t.record_time,t.amount,t.description,t.photoalbumID,t.photoalbumCover,h.id saleId,h.salesType,h.currencyType,h.payType,h.order_id orderId
+         from tgod_user_trade_record t ,tgod_sales_record h where t.sales_record_id = h.id and t.id = #{id}
+    </select>
+
+    <select id="getIncome" parameterType="map" resultType="com.wishes.yearOld.model.IncomeVO">
+        select t.userid userid,h.salesType type,sum(t.amount) income from tgod_user_trade_record t ,tgod_sales_record h
+         where t.sales_record_id = h.id and t.userid = #{userid}
+        <if test="date!=null">
+            and t.record_time >=#{date}
+        </if>
+        GROUP BY h.salesType,t.userid
+    </select>
+
+    <insert id="insertApplyCashout" parameterType="com.wishes.yearOld.model.ApplyCashout">
+        insert into tgod_apply_cashout(apply_time,status,account_num,user_id,user_group,cashout,pay_status,fail_reason,pass_time,pay_time,finish_time,batch_no)
+        values(#{applyTime},#{status},#{accountNum},#{userId},#{userGroup},#{cashout},#{payStatus},#{failReason},#{passTime},#{payTime},#{finishTime},#{batchNo})
+    </insert>
+
+    <select id="queryApplyCashout" parameterType="com.wishes.yearOld.model.ApplyCashout" resultType="com.wishes.yearOld.model.ApplyCashout">
+        SELECT
+        <include refid="ApplyCashoutField"/>
+        FROM
+        tgod_apply_cashout tac
+        LEFT JOIN tgod_user tu ON tu.id=tac.user_id
+        LEFT JOIN tgod_userdeailinfo tud
+        on tud.id=tu.id
+        <include refid="ApplyCashoutWhere"/>
+        ORDER BY apply_time;
+    </select>
+
+    <sql id="ApplyCashoutWhere">
+        <where>
+            <if test="userId != null and userId &gt; 0">
+                tac.user_id = #{userId}
+            </if>
+            <if test="status != null and status &gt; 0">
+                and tac.status = #{status}
+            </if>
+            <if test="statuss != null and statuss != ''">
+                and tac.pay_status in
+                <foreach close=")" collection="statuss" index="index" item="status" open="(" separator=",">
+                    #{status}
+                </foreach>
+            </if>
+        </where>
+    </sql>
+
+    <sql id="ApplyCashoutField">
+        tac.id id,
+        tac.apply_time applyTime,
+        tac.status status,
+        tac.user_id userId,
+        tu.nickname nickname,
+        tac.user_group userGroup,
+        tud.realname realname,
+        tac.account_num accountNum,
+        tu.zhifubao zhifubao,
+        tu.mobile mobile,
+        tac.cashout cashout,
+        tac.pay_status payStatus,
+        tac.fail_reason failReason,
+        tac.pass_time passTime,
+        tac.pay_time payTime,
+        tac.finish_time finishTime,
+        tac.batch_no batchNo
+    </sql>
+
+    <insert id="insertUserAccount" parameterType="com.wishes.yearOld.model.UserAccount">
+        INSERT INTO tgod_user_account(user_id,user_group,amount,cashout,balance) VALUES(#{userId},#{userGroup},#{amount},#{cashout},#{balance})
+    </insert>
+
+    <update id="updateUserAccount" parameterType="com.wishes.yearOld.model.UserAccount">
+        UPDATE tgod_user_account
+        <set>
+            <if test="userGroup != null">
+                user_group =#{userGroup}
+            </if>
+            <if test="amount != null">
+                amount = #{amount},
+            </if>
+            <if test="cashout != null">
+                cashout = #{cashout},
+            </if>
+            <if test="balance != null">
+                balance = #{balance},
+            </if>
+        </set>
+        where user_id = #{userId}
+    </update>
+
+    <resultMap id="userRecordMap" type="com.wishes.yearOld.model.UserRecord">
+        <id column="id" property="id"/>
+        <result column="userid" property="userid"/>
+        <result column="record_time" property="recordTime"/>
+        <result column="amount" property="amount"/>
+        <result column="album_id"  property="albumId" />
+        <result column="modelId"  property="modelId" />
+        <result column="activityId"  property="activityId"/>
+        <result column="ruleId"  property="ruleId"/>
+        <result column="trade_type"  property="tradeType"/>
+        <result column="salesType"  property="salesType"/>
+        <result column="description1"  property="description1"/>
+        <result column="description2"  property="description2"/>
+        <result column="order_id"  property="orderId"/>
+        <result column="order_status"  property="orderStatus"/>
+    </resultMap>
+
+    <select id="queryUserRecord" resultMap="userRecordMap" parameterType="com.wishes.yearOld.model.UserRecord">
+        select * from v_user_records t
+        where t.userid = #{userid,jdbcType=INTEGER}
+        order by t.record_time desc limit #{start},#{pageSize}
+    </select>
+
+    <select id="loadUserRecord" resultMap="userRecordMap" parameterType="java.lang.String">
+        select * from v_user_records t
+        where t.id = #{id,jdbcType=VARCHAR}
+    </select>
+    <!-- 根据订单Id获取交易信息,不包含青豆交易的记录 -->
+    <select id="loadUserRecordByOrderId" resultMap="userRecordMap" parameterType="com.wishes.yearOld.model.UserRecord">
+        select * from v_user_records t
+        where t.trade_type != 2 AND t.userid = #{userid,jdbcType=INTEGER} and t.order_id = #{orderId,jdbcType=INTEGER}
+    </select>
+
+    <select id="getAlbumIncome" parameterType="map" resultType="java.math.BigDecimal">
+        select sum(t.amount) income from tgod_user_trade_record t
+        where t.userid = #{userId} and t.photoalbumID=#{albumId}
+        <if test="begin!=null">
+            and t.record_time >=#{begin}
+        </if>
+        <if test="end!=null">
+            and <![CDATA[t.record_time <#{end}]]>
+        </if>
+    </select>
+
+    <select id="getBuyAlbumList" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select t.userid from tgod_user_trade_record t
+        where t.photoalbumID=#{albumId} and <![CDATA[t.amount <0]]>
+    </select>
+
+    <select id="getBuyAlbumCount" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select count(t.userid) from tgod_user_trade_record t
+        where t.photoalbumID=#{albumId} and <![CDATA[t.amount <0]]>
+    </select>
+
+</mapper>

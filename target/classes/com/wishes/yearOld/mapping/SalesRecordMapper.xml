@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wishes.yearOld.dao.SalesRecordMapper">
+  <resultMap id="BaseResultMap" type="com.wishes.yearOld.model.SalesRecord">
+    <constructor>
+      <idArg column="id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="productId" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="salesTime" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <arg column="buyerID" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="salesType" javaType="java.lang.Byte" jdbcType="TINYINT" />
+      <arg column="price" javaType="java.math.BigDecimal" jdbcType="DECIMAL" />
+      <arg column="photographerProfitRate" javaType="java.math.BigDecimal" jdbcType="DECIMAL" />
+      <arg column="modelID" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="photoGrapherID" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="currencyType" javaType="java.lang.Byte" jdbcType="TINYINT" />
+      <arg column="paytype" javaType="java.lang.Byte" jdbcType="TINYINT" />
+      <arg column="order_id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, productId, salesTime, buyerID, salesType, price, photographerProfitRate, modelID, 
+    photoGrapherID, currencyType, paytype, order_id
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tgod_sales_record
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tgod_sales_record
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.wishes.yearOld.model.SalesRecord">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into tgod_sales_record (productId, salesTime, buyerID, 
+      salesType, price, photographerProfitRate, 
+      modelID, photoGrapherID, currencyType, 
+      paytype, order_id)
+    values (#{productid,jdbcType=INTEGER}, #{salestime,jdbcType=TIMESTAMP}, #{buyerid,jdbcType=INTEGER}, 
+      #{salestype,jdbcType=TINYINT}, #{price,jdbcType=DECIMAL}, #{photographerprofitrate,jdbcType=DECIMAL}, 
+      #{modelid,jdbcType=INTEGER}, #{photographerid,jdbcType=INTEGER}, #{currencytype,jdbcType=TINYINT}, 
+      #{paytype,jdbcType=TINYINT}, #{orderId,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="com.wishes.yearOld.model.SalesRecord">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into tgod_sales_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="productid != null">
+        productId,
+      </if>
+      <if test="salestime != null">
+        salesTime,
+      </if>
+      <if test="buyerid != null">
+        buyerID,
+      </if>
+      <if test="salestype != null">
+        salesType,
+      </if>
+      <if test="price != null">
+        price,
+      </if>
+      <if test="photographerprofitrate != null">
+        photographerProfitRate,
+      </if>
+      <if test="modelid != null">
+        modelID,
+      </if>
+      <if test="photographerid != null">
+        photoGrapherID,
+      </if>
+      <if test="currencytype != null">
+        currencyType,
+      </if>
+      <if test="paytype != null">
+        paytype,
+      </if>
+      <if test="orderId != null">
+        order_id,
+      </if>
+    </trim>
+    <trim prefix=" select " suffix=" from dual " suffixOverrides=",">
+      <if test="productid != null">
+        #{productid,jdbcType=INTEGER},
+      </if>
+      <if test="salestime != null">
+        #{salestime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="buyerid != null">
+        #{buyerid,jdbcType=INTEGER},
+      </if>
+      <if test="salestype != null">
+        #{salestype,jdbcType=TINYINT},
+      </if>
+      <if test="price != null">
+        #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="photographerprofitrate != null">
+        #{photographerprofitrate,jdbcType=DECIMAL},
+      </if>
+      <if test="modelid != null">
+        #{modelid,jdbcType=INTEGER},
+      </if>
+      <if test="photographerid != null">
+        #{photographerid,jdbcType=INTEGER},
+      </if>
+      <if test="currencytype != null">
+        #{currencytype,jdbcType=TINYINT},
+      </if>
+      <if test="paytype != null">
+        #{paytype,jdbcType=TINYINT},
+      </if>
+      <if test="orderId != null">
+        #{orderId,jdbcType=INTEGER},
+      </if>
+    </trim>
+    <if test="orderId != null">
+      where not exists (select 1 from tgod_sales_record where order_id = #{orderId} )
+    </if>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wishes.yearOld.model.SalesRecord">
+    update tgod_sales_record
+    <set>
+      <if test="productid != null">
+        productId = #{productid,jdbcType=INTEGER},
+      </if>
+      <if test="salestime != null">
+        salesTime = #{salestime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="buyerid != null">
+        buyerID = #{buyerid,jdbcType=INTEGER},
+      </if>
+      <if test="salestype != null">
+        salesType = #{salestype,jdbcType=TINYINT},
+      </if>
+      <if test="price != null">
+        price = #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="photographerprofitrate != null">
+        photographerProfitRate = #{photographerprofitrate,jdbcType=DECIMAL},
+      </if>
+      <if test="modelid != null">
+        modelID = #{modelid,jdbcType=INTEGER},
+      </if>
+      <if test="photographerid != null">
+        photoGrapherID = #{photographerid,jdbcType=INTEGER},
+      </if>
+      <if test="currencytype != null">
+        currencyType = #{currencytype,jdbcType=TINYINT},
+      </if>
+      <if test="paytype != null">
+        paytype = #{paytype,jdbcType=TINYINT},
+      </if>
+      <if test="orderId != null">
+        order_id = #{orderId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wishes.yearOld.model.SalesRecord">
+    update tgod_sales_record
+    set productId = #{productid,jdbcType=INTEGER},
+      salesTime = #{salestime,jdbcType=TIMESTAMP},
+      buyerID = #{buyerid,jdbcType=INTEGER},
+      salesType = #{salestype,jdbcType=TINYINT},
+      price = #{price,jdbcType=DECIMAL},
+      photographerProfitRate = #{photographerprofitrate,jdbcType=DECIMAL},
+      modelID = #{modelid,jdbcType=INTEGER},
+      photoGrapherID = #{photographerid,jdbcType=INTEGER},
+      currencyType = #{currencytype,jdbcType=TINYINT},
+      paytype = #{paytype,jdbcType=TINYINT},
+      order_id = #{orderId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="findSalesRecordByOrderId" parameterType="com.wishes.yearOld.model.SalesRecord">
+    select <include refid="Base_Column_List"/> from tgod_sales_record where order_id = #{orderId}
+  </select>
+</mapper>

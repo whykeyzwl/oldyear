@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wishes.yearOld.dao.TgodPhotoMapper">
+  <resultMap id="BaseResultMap" type="com.wishes.yearOld.model.TgodPhoto">
+    <constructor>
+      <idArg column="id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="albumId" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="page" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="level" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="path" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="title" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="description" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="filesize" javaType="java.lang.String" jdbcType="VARCHAR" /> 
+      <arg column="height" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="weight" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="big_image" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="exif" javaType="java.lang.String" jdbcType="LONGVARCHAR" />
+      <arg column="audit_status" javaType="java.lang.Byte" jdbcType="TINYINT" />
+      <arg column="audit_comment" javaType="java.lang.String" jdbcType="VARCHAR" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, albumId, page, level, path, title, description,filesize,  height, weight, big_image, exif, audit_status, audit_comment
+  </sql>
+  <sql id="TgodPhotoWhere">
+    <where>
+      <if test="id != null">
+        id = #{id}
+      </if>
+      <if test="title != null and title != ''">
+        and title = #{title}
+      </if>
+      <if test="albumid != null">
+        and albumId = #{albumid}
+      </if>
+      <if test="page != null">
+        and page = #{page}
+      </if>
+      <if test="level != null">
+        and level = #{level}
+      </if>
+      <if test="auditStatus != null">
+        and audit_status = #{auditStatus}
+      </if>
+    </where>
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tgod_photo
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tgod_photo
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.wishes.yearOld.model.TgodPhoto">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into tgod_photo (albumId, page, level, 
+      path, title, description, 
+      filesize, height, weight, big_image, exif,
+      audit_status, audit_comment
+      )
+    values (#{albumid,jdbcType=INTEGER}, #{page,jdbcType=INTEGER}, #{level,jdbcType=INTEGER}, 
+      #{path,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{description,jdbcType=VARCHAR}, 
+      #{filesize,jdbcType=VARCHAR}, #{height,jdbcType=INTEGER}, #{weight,jdbcType=INTEGER},#{bigImage,jdbcType=VARCHAR},#{exif,jdbcType=LONGVARCHAR},
+      #{auditStatus,jdbcType=TINYINT}, #{auditComment,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.wishes.yearOld.model.TgodPhoto">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into tgod_photo
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="albumid != null">
+        albumId,
+      </if>
+      <if test="page != null">
+        page,
+      </if>
+      <if test="level != null">
+        level,
+      </if>
+      <if test="path != null">
+        path,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="description != null">
+        description,
+      </if>
+      <if test="filesize != null">
+        filesize,
+      </if>
+      <if test="height != null">
+        height,
+      </if>
+      <if test="weight != null">
+        weight,
+      </if>
+      <if test="bigImage != null">
+        big_image,
+      </if>
+      <if test="exif != null">
+        exif,
+      </if>
+      <if test="auditStatus != null">
+        audit_status,
+      </if>
+      <if test="auditComment != null">
+        audit_comment,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="albumid != null">
+        #{albumid,jdbcType=INTEGER},
+      </if>
+      <if test="page != null">
+        #{page,jdbcType=INTEGER},
+      </if>
+      <if test="level != null">
+        #{level,jdbcType=INTEGER},
+      </if>
+      <if test="path != null">
+        #{path,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="filesize != null">
+        #{filesize,jdbcType=VARCHAR},
+      </if>
+      <if test="height != null">
+        #{height,jdbcType=INTEGER},
+      </if>
+      <if test="weight != null">
+        #{weight,jdbcType=INTEGER},
+      </if>
+      <if test="bigImage != null">
+        #{bigImage,jdbcType=VARCHAR},
+      </if>
+      <if test="exif != null">
+        #{exif,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="auditStatus != null">
+        #{auditStatus,jdbcType=TINYINT},
+      </if>
+      <if test="auditComment != null">
+        #{auditComment,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wishes.yearOld.model.TgodPhoto">
+    update tgod_photo
+    <set>
+      <if test="albumid != null">
+        albumId = #{albumid,jdbcType=INTEGER},
+      </if>
+      <if test="page != null">
+        page = #{page,jdbcType=INTEGER},
+      </if>
+      <if test="level != null">
+        level = #{level,jdbcType=INTEGER},
+      </if>
+      <if test="path != null">
+        path = #{path,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null">
+        description = #{description,jdbcType=VARCHAR},
+      </if>
+      <if test="filesize != null">
+        filesize = #{filesize,jdbcType=VARCHAR},
+      </if>
+      <if test="height != null">
+        height = #{height,jdbcType=INTEGER},
+      </if>
+      <if test="weight != null">
+        weight = #{weight,jdbcType=INTEGER},
+      </if>
+      <if test="bigImage != null">
+        big_image = #{bigImage,jdbcType=VARCHAR},
+      </if>
+      <if test="exif != null">
+        exif = #{exif,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="auditStatus != null">
+        audit_status = #{auditStatus,jdbcType=TINYINT},
+      </if>
+      <if test="auditComment != null">
+        audit_comment = #{auditComment,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wishes.yearOld.model.TgodPhoto">
+    update tgod_photo
+    set albumId = #{albumid,jdbcType=INTEGER},
+      page = #{page,jdbcType=INTEGER},
+      level = #{level,jdbcType=INTEGER},
+      path = #{path,jdbcType=VARCHAR},
+      title = #{title,jdbcType=VARCHAR},
+      description = #{description,jdbcType=VARCHAR},
+      filesize = #{filesize,jdbcType=VARCHAR},
+      height = #{height,jdbcType=INTEGER},
+      weight = #{weight,jdbcType=INTEGER},
+      big_image = #{bigImage,jdbcType=VARCHAR},
+      exif = #{exif,jdbcType=LONGVARCHAR},
+      audit_status = #{auditStatus,jdbcType=TINYINT},
+      audit_comment = #{auditComment,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="queryTgodPhotos" parameterType="com.wishes.yearOld.model.TgodPhoto" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from tgod_photo
+    <include refid="TgodPhotoWhere"/>
+    order by page asc
+  </select>
+
+  <delete id="deleteAlbumPhotos" parameterType="java.lang.Integer">
+    delete from tgod_photo where albumId = #{value}
+  </delete>
+
+</mapper>

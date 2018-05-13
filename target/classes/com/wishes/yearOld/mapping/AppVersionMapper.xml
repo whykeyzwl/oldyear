@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wishes.yearOld.dao.AppVersionDao">
+    <resultMap id="AppVersion" type="com.wishes.yearOld.model.AppVersion">
+        <id column="id" property="id"/>
+        <result column="app_type" property="appType"/>
+        <result column="version_number" property="versionNumber"/>
+        <result column="version_name" property="versionName"/>
+        <result column="version_description" property="versionDescription"/>
+        <result column="download_link" property="downloadLink"/>
+        <result column="publish_time" property="publishTime"/>
+    </resultMap>
+
+    <!-- 获取版本信息 -->
+    <select id="getAppVersion" parameterType="java.lang.Integer" resultMap="AppVersion">
+        SELECT  id, app_type, version_number, version_name, version_description, download_link, publish_time
+        FROM tgod_app_version where app_type = #{type} order by id desc limit 1
+    </select>
+</mapper>

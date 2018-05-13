@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wishes.yearOld.dao.RecordQingdouMapper">
+    <resultMap id="BaseResultMap" type="com.wishes.yearOld.model.RecordQingdou">
+        <constructor>
+            <idArg column="id" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+            <arg column="user_id" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+            <arg column="qingdou_amount" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+            <arg column="rec_type" javaType="java.lang.Byte" jdbcType="TINYINT"/>
+            <arg column="album_id" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+            <arg column="create_time" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        </constructor>
+    </resultMap>
+    <resultMap id="RecordQingdouS" type="com.wishes.yearOld.model.RecordQingdou">
+        <result column="id" property="id"/>
+        <result column="user_id" property="userId"/>
+        <result column="qingdou_amount" property="qingdouAmount"/>
+        <result column="rec_type" property="recType"/>
+        <result column="album_id" property="albumId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="title" property="title"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, user_id userId, qingdou_amount qingdouAmount, rec_type recType, album_id albumId, create_time createTime
+  </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from tgod_records_qingdou
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tgod_records_qingdou
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+    <insert id="insert" parameterType="com.wishes.yearOld.model.RecordQingdou">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into tgod_records_qingdou (user_id, qingdou_amount, rec_type,
+        album_id, create_time)
+        values (#{userId,jdbcType=INTEGER}, #{qingdouAmount,jdbcType=INTEGER}, #{recType,jdbcType=TINYINT},
+        #{albumId,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" parameterType="com.wishes.yearOld.model.RecordQingdou">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into tgod_records_qingdou
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="qingdouAmount != null">
+                qingdou_amount,
+            </if>
+            <if test="recType != null">
+                rec_type,
+            </if>
+            <if test="albumId != null">
+                album_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="qingdouAmount != null">
+                #{qingdouAmount,jdbcType=INTEGER},
+            </if>
+            <if test="recType != null">
+                #{recType,jdbcType=TINYINT},
+            </if>
+            <if test="albumId != null">
+                #{albumId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.wishes.yearOld.model.RecordQingdou">
+        update tgod_records_qingdou
+        <set>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="qingdouAmount != null">
+                qingdou_amount = #{qingdouAmount,jdbcType=INTEGER},
+            </if>
+            <if test="recType != null">
+                rec_type = #{recType,jdbcType=TINYINT},
+            </if>
+            <if test="albumId != null">
+                album_id = #{albumId,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.wishes.yearOld.model.RecordQingdou">
+    update tgod_records_qingdou
+    set user_id = #{userId,jdbcType=INTEGER},
+      qingdou_amount = #{qingdouAmount,jdbcType=INTEGER},
+      rec_type = #{recType,jdbcType=TINYINT},
+      album_id = #{albumId,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+    <select id="checkAlbumPermission" parameterType="com.wishes.yearOld.model.RecordQingdou" resultType="java.lang.Integer">
+    select count(1)
+    from tgod_records_qingdou
+    where user_id=#{userId} and album_id=#{albumId} and rec_type = #{recType}
+  </select>
+    <select id="getTodayInviteTimes" parameterType="com.wishes.yearOld.model.RecordQingdou" resultType="java.lang.Integer">
+    select count(1)
+    from tgod_records_qingdou
+    where user_id=#{userId}  and rec_type=#{recType} and date(create_time)=date(#{createTime})
+  </select>
+
+    <select id="queryRecordQingdou" resultType="com.wishes.yearOld.model.RecordQingdou">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM tgod_records_qingdou
+        WHERE user_id = #{userId,jdbcType=INTEGER}
+        <if test="albumId != null">
+            AND album_id= #{albumId,jdbcType=INTEGER}
+        </if>
+        <if test="recType != null">
+            AND rec_type= #{recType,jdbcType=TINYINT}
+        </if>
+        ORDER BY create_time DESC LIMIT 1;
+    </select>
+
+    <select id="queryRecordCount" parameterType="com.wishes.yearOld.model.RecordQingdou" resultType="java.lang.Integer">
+        SELECT
+        count(1)
+        FROM tgod_records_qingdou
+        WHERE user_id = #{userId,jdbcType=INTEGER} and album_id > 0
+        <if test="recType != null">
+            AND rec_type= #{recType,jdbcType=TINYINT}
+        </if>
+        <if test="current == 1">
+            AND to_days(create_time) = to_days(NOW())
+        </if>
+     </select>
+
+    <select id="queryRecordQingdouS" resultMap="RecordQingdouS">
+        SELECT t.id,t.create_time,t.album_id,t.qingdou_amount,t.rec_type,p.title,t.user_id
+        from tgod_records_qingdou t
+        INNER JOIN tgod_photoalbum p on t.album_id = p.id
+        where t.user_id = #{userId}
+        ORDER BY t.create_time desc
+        <if test="pageSize &gt; 0">
+            limit #{pageNo}, #{pageSize}
+        </if>
+    </select>
+</mapper>

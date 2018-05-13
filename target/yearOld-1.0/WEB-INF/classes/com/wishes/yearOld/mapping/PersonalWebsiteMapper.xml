@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wishes.yearOld.dao.PersonalWebsiteDao">
+    <resultMap id="PersonalWebsite" type="com.wishes.yearOld.model.PersonalWebsite">
+        <id column="id" property="id"/>
+        <result column="loginID" property="userid"/>
+        <result column="nickname" property="username"/>
+        <result column="face" property="userHerderPic"/>
+        <result column="home_cover" property="userFirstPic"/>
+        
+    </resultMap>
+   <!-- 定义查询条件sql -->
+  <sql id="mainSqlWhere">
+        <where>
+            <if test="userid != null">
+                 id = #{userid}
+            </if>
+           
+        </where>
+    </sql>
+    <!-- 获取用户信息 -->
+   <select id="getPersonalWebsite" parameterType="PersonalWebsite" resultMap="PersonalWebsite">
+    SELECT
+    id, 
+    loginID, 
+    nickname,  
+    (CASE
+     WHEN
+     LOCATE('http', face)<![CDATA[ <=]]>0
+     THEN CONCAT_WS('','http://image.qingdouke.com/',face)
+     ELSE face
+     END ) as face,
+     CONCAT_WS('','http://image.qingdouke.com',home_cover) home_cover,now() as sysDate
+     FROM tgod_user 
+     <include refid="mainSqlWhere"/>
+    </select>
+</mapper>

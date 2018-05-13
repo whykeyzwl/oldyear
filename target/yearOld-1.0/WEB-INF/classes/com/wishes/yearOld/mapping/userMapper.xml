@@ -1,0 +1,564 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wishes.yearOld.dao.IUserMapper">
+
+    <insert id="register" useGeneratedKeys="true" keyProperty="id" parameterType="com.wishes.yearOld.model.User">
+        INSERT INTO tgod_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="mobile != null">
+                mobile,
+            </if>
+            <if test="password != null">
+                password,
+            </if>
+            <if test="groupId != null">
+                user_group,
+            </if>
+            <if test="loginID != null">
+                loginID,
+            </if>
+            <if test="loginType != null">
+                loginType,
+            </if>
+            <if test="face != null">
+                face,
+            </if>
+            <if test="nickName != null">
+                nickName,
+            </if>
+            <if test="registerTime != null">
+                register_time,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="beginTime != null">
+                begin_time,
+            </if>
+            <if test="endTime != null">
+                end_time,
+            </if>
+            <if test="unionid != null">
+                unionid,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="mobile != null">
+                #{mobile},
+            </if>
+            <if test="password != null">
+                #{password},
+            </if>
+            <if test="groupId != null">
+                #{groupId},
+            </if>
+            <if test="loginID != null">
+                #{loginID},
+            </if>
+            <if test="loginType != null">
+                #{loginType},
+            </if>
+            <if test="face != null">
+                #{face},
+            </if>
+            <if test="nickName != null">
+                #{nickName},
+            </if>
+            <if test="registerTime != null">
+                #{registerTime},
+            </if>
+             <if test="type != null">
+                #{type},
+            </if>
+            <if test="beginTime != null">
+                #{beginTime},
+            </if>
+            <if test="endTime != null">
+                #{endTime},
+            </if>
+            <if test="unionid != null">
+                #{unionid},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="findById" resultMap="user">
+        <if test="curUserId == null">
+        SELECT 
+        u.id,
+        u.loginID,
+        u.loginType,
+        u.user_group,
+        u.mobile,
+        u.wechat,
+        u.weibo,
+        u.qq,
+        u.zhifubao,
+        u.password,
+        u.email,
+        u.nickname,
+        u.face,
+        u.cover,
+        u.status,
+        u.auditTime,
+        u.auditid,
+        u.register_time,
+        u.login_time,
+        u.lock_status,
+        u.home_cover,
+        u.type,
+        u.begin_time,
+        u.end_time,
+        u.unionid,
+        f.qingdou,
+        f.follows,
+        f.fans,
+        f.timeline,
+        f.like_count,
+        f.albums
+        FROM tgod_user u
+        left join tgod_usercountinfo f
+        on u.id=f.id
+        </if>
+        <if test="curUserId != null">
+        select 
+        u.id,
+        u.loginID,
+        u.loginType,
+        u.user_group,
+        u.mobile,
+        u.wechat,
+        u.weibo,
+        u.qq,
+        u.zhifubao,
+        u.password,
+        u.email,
+        u.nickname,
+        u.face,
+        u.cover,
+        u.status,
+        u.auditTime,
+        u.auditid,
+        u.register_time,
+        u.login_time,
+        u.lock_status,
+        u.home_cover,
+        u.type,
+        u.begin_time,
+        u.end_time,
+        u.unionid, 
+        y.qingdou,
+        y.follows,
+        y.fans,
+        y.timeline,
+        y.like_count,
+        y.albums,
+        1-isnull(f.id) as focusByCurUser 
+        FROM tgod_user u 
+        left join tgod_usercountinfo y
+        on u.id=y.id
+        left JOIN 
+        tgod_users_focus f
+        on f.focusId = u.id and f.userId=#{curUserId} and f.focusType=0
+        </if>
+        WHERE u.id=#{id} and status &lt;&gt; 2
+    </select>
+
+    <select id="queryCount" resultType="int">
+        select count(id) from tgod_user
+        <where>
+            status &lt;&gt; 2
+            <if test="keyword != null">
+                and nickname like '%${keyword}%'
+            </if>
+            <if test="group != null">
+                and user_group=#{group}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryList" resultMap="user">
+        <if test="curUserId == null">
+            select u.id,u.user_group,u.nickName,u.face,0 as focusByCurUser from tgod_user u
+        </if>
+        <if test="curUserId != null">
+            select u.id,u.user_group,u.nickName,u.face, 1-isnull(f.id) as focusByCurUser FROM tgod_user u
+            left JOIN tgod_users_focus f
+            on f.focusId = u.id and f.userId=#{curUserId} and f.focusType=0
+        </if>
+        <where>
+            u.status &lt;&gt; 2
+            <if test="condition.keyword != null">
+                and u.nickname like '%${condition.keyword}%'
+            </if>
+            <if test="condition.group != null">
+                and u.user_group=#{condition.group}
+            </if>
+        </where>
+        limit #{condition.start},#{condition.pageSize}
+    </select>
+  <!-- 按名字首字母查询用户 -->
+    <select id="queryUserAllList" resultMap="user">
+      select 
+      u.id,
+      u.nickname,
+      u.end_time
+      from 
+      tgod_user u
+        <where>
+            u.status &lt;&gt; 2
+            and u.type=1
+            <if test="group != null and group != ''">
+                and u.user_group=#{group}
+            </if>
+            <if test="keyword != null and keyword != '' and keyword!='其他'">
+             and (u.PY like '${keyword}%' or u.nickname like '${keyword}%')
+            </if>
+        </where>
+          order by u.login_time DESC
+    </select>
+    <update id="updateValue" parameterType="map">
+        <if test="itemName == 'qingdou'  ">
+        UPDATE 
+        tgod_usercountinfo 
+        SET 
+        qingdou = #{itemValue}
+        where id=#{userId}      
+        </if>
+        <if test="itemName != 'qingdou' ">
+        UPDATE 
+        tgod_user 
+        SET 
+        ${itemName} = #{itemValue}
+        where id=#{userId} 
+        </if>      
+    </update>
+   <update id="updateValueCount" parameterType="map">
+        <if test="itemName != '' and  itemName != null ">
+        UPDATE 
+        tgod_usercountinfo 
+        SET 
+        ${itemName} = #{itemValue}
+        where id=#{userId}      
+        </if>
+           
+    </update>
+    <update id="updateMobile" parameterType="map">
+        UPDATE tgod_user SET mobile = #{mobile}, loginID = if(loginType=0, #{mobile}, loginID) where id=#{userId}
+    </update>
+
+    <update id="updateFrom3party" parameterType="com.wishes.yearOld.model.User">
+        UPDATE tgod_user SET
+        loginType = #{loginType},
+        loginID = #{loginID},
+        <trim suffixOverrides=",">
+            <if test="face != null">
+                face = #{face},
+            </if>
+            <if test="nickName != null">
+                nickName = #{nickName},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+     <update id="updateUserVip" parameterType="com.wishes.yearOld.model.User">
+        UPDATE tgod_user SET
+        <trim suffixOverrides=",">
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="beginTime != null">
+                begin_time = #{beginTime},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+    
+    <select id="password" parameterType="map" resultType="java.lang.String">
+        SELECT password FROM tgod_user WHERE id=#{userId}
+    </select>
+
+    <update id="changePassword" parameterType="map">
+        UPDATE tgod_user SET password = #{newPassword} WHERE id=#{userId}
+    </update>
+
+    <insert id="certify" parameterType="map">
+        INSERT INTO tgod_apply_certified(userid,user_apply_group,
+        <if test="videoUrl != null">
+            certified_video,
+        </if>
+        apply_time) VALUES(#{userId},#{userGroup},
+        <if test="videoUrl != null">
+          #{videoUrl},
+        </if>
+        #{date})
+    </insert>
+
+    <select id="getCertifyStatus" parameterType="int" resultType="java.lang.Integer">
+        select certify_status from tgod_apply_certified WHERE userid = #{userId} order by apply_time desc limit 1
+    </select>
+
+    <select id="getModelAlbums" parameterType="int" resultType="java.lang.Integer">
+
+        select COUNT(1) from tgod_photoalbum t
+        INNER JOIN tgod_user u ON (u.user_group = 1 AND u.id = t.modelID)
+        WHERE t.modelID = #{modelId}
+    </select>
+
+    <select id="findByNickName"  resultMap="user">
+        SELECT * FROM tgod_user WHERE nickname=#{nickName} and status &lt;&gt; 2
+    </select>
+
+    <select id="findByMobile" resultType="java.lang.Integer">
+        SELECT count(1) FROM tgod_user WHERE mobile=#{mobile} and status &lt;&gt; 2
+    </select>
+
+    <select id="findByLoginId"  resultMap="user">
+        SELECT * FROM tgod_user WHERE loginID = #{loginId} and loginType = #{loginType} and status &lt;&gt; 2
+    </select>
+
+    <select id="selectIsLikeGod" resultType="com.wishes.yearOld.model.GodViewLikeVO">
+        SELECT id,userId,likeId,likeType  from tgod_users_like where userId = #{userId} and likeId = #{likeId} and likeType = #{likeType}
+    </select>
+
+    <select id="selectIsFocus" parameterType="com.wishes.yearOld.model.UsersFocus" resultType="com.wishes.yearOld.model.UsersFocus">
+        select id,userId,focusId,focusType,createTime from tgod_users_focus where userId =#{userId} and focusId = #{focusId} and focusType = #{focusType}
+    </select>
+
+    <select id="selectIsCollection" parameterType="com.wishes.yearOld.model.UsersCollection" resultType="com.wishes.yearOld.model.UsersCollection">
+        select id,userId,collectionId,collectionType,createTime from tgod_user_collection where userId =#{userId} and collectionId = #{collectionId} and collectionType = #{collectionType}
+    </select>
+
+    <select id="selectUserAccount" parameterType="com.wishes.yearOld.model.User" resultType="com.wishes.yearOld.model.UserAccount">
+        select id, user_id userId, user_group, amount, cashout, balance  from tgod_user_account where user_id = #{id}
+    </select>
+
+    <update id="updateGodUp" parameterType="com.wishes.yearOld.model.GodViewLikeVO">
+        UPDATE tgod_usercountinfo SET like_count = like_count + 1 where id = #{likeId}
+    </update>
+
+    <insert id="insertGodLike" parameterType="com.wishes.yearOld.model.GodViewLikeVO">
+        INSERT INTO tgod_users_like(userId,likeId,likeType,createTime) VALUES(#{userId},#{likeId},#{likeType},#{createTime})
+    </insert>
+
+    <update id="updateGodDown" parameterType="com.wishes.yearOld.model.GodViewLikeVO">
+        UPDATE tgod_usercountinfo SET like_count = like_count - 1 where id = #{likeId}
+    </update>
+
+    <delete id="deleteGodLike" parameterType="com.wishes.yearOld.model.GodViewLikeVO">
+        DELETE FROM tgod_users_like where userId = #{userId} AND likeId = #{likeId} AND likeType = #{likeType}
+    </delete>
+
+    <select id="selectGodLikeCount" resultType="java.lang.Integer">
+        select like_count from tgod_usercountinfo where id=#{likeId}
+    </select>
+
+    <update id="updateTimeline" parameterType="java.lang.Integer">
+        UPDATE tgod_usercountinfo SET timeline = timeline + 1 where id = #{id}
+    </update>
+
+    <select id="getFocusUserCount" resultType="java.lang.Integer">
+        select count(1) from tgod_users_focus
+        where 1=1
+        <if test="curUserId != null">
+          and userId = #{curUserId}
+        </if>
+        <if test="focusUserId != null">
+          and focusId=#{focusUserId}
+        </if>
+        and focusType=0
+    </select>
+
+    <insert id="focus">
+        insert tgod_users_focus (userId,focusId,focusType) VALUE (#{curUserId},#{focusId},#{focusType})
+    </insert>
+
+    <delete id="unfocus">
+        delete from tgod_users_focus where  userId=#{curUserId} and focusId=#{focusId} and focusType=#{focusType}
+    </delete>
+
+    <update id="updateReceiver" parameterType="com.wishes.yearOld.model.User">
+        UPDATE tgod_userdeailinfo
+        <set>
+            <if test="receiverName != null">
+                receiveName = #{receiverName},
+            </if>
+            <if test="receiverMobile != null">
+                receiveMobile = #{receiverMobile},
+            </if>
+            <if test="receiverCity != null">
+                receiverCity = #{receiverCity},
+            </if>
+            <if test="receiverAddress != null">
+                receiverAddress = #{receiverAddress},
+            </if>
+            <if test="receiverPostCode != null">
+                receiverPostCode = #{receiverPostCode},
+            </if>
+       </set>
+        where id = #{id}
+    </update>
+    <!-- 修改用户封面图 -->
+    <update id="updateCover" parameterType="com.wishes.yearOld.model.User">
+        UPDATE tgod_user
+        <set>
+            <if test="timelineCover != null">
+                home_cover = #{timelineCover},
+            </if>
+             <if test="face != null">
+                face = #{face},
+            </if>
+            <if test="editorCover != null">
+                cover = #{editorCover}
+            </if>
+            
+       </set>
+        where id = ${id}
+    </update>
+    <update id="updateAtLogin" parameterType="com.wishes.yearOld.model.User">
+        UPDATE tgod_user set 
+        login_time = #{lastLoginTime}
+        <if test="unionid != null and unionid != '' ">
+        ,unionid = #{unionid} 
+        </if>
+        where id=#{id}
+   </update>
+   
+   <update id="updateAtLoginTimes" parameterType="com.wishes.yearOld.model.User">
+        UPDATE tgod_usercountinfo set  login_times = login_times+1 where id=#{id}
+   </update>
+
+    <update id="addQingdou" parameterType="map">
+        UPDATE tgod_usercountinfo set qingdou = qingdou + #{qingdou} where id = #{userId}
+    </update>
+
+    <resultMap id="user" type="com.wishes.yearOld.model.User">
+        <result property="id" column="id"></result>
+        <result property="groupId" column="user_group"></result>
+        <result property="mobile" column="mobile"></result>
+        <result property="password" column="password"></result>
+        <result property="email" column="email"></result>
+        <result property="nickName" column="nickname"></result>
+        <result property="realName" column="realname"></result>
+        <result property="idNumber" column="IDNumber"></result>
+        <result property="idCardBack" column="IDCard_back"></result>
+        <result property="idCardFront" column="IDCard_front"></result>
+        <result property="zhifubao" column="zhifubao"></result>
+        <result property="sex" column="sex"></result>
+        <result property="face" column="face"></result>
+        <result property="province" column="province"></result>
+        <result property="city" column="city"></result>
+        <result property="address" column="address"></result>
+        <result property="postCode" column="postcode"></result>
+        <result property="bust" column="bust"></result>
+        <result property="waist" column="waist"></result>
+        <result property="hip" column="hip"></result>
+        <result property="cup" column="cup"></result>
+        <result property="height" column="height"></result>
+        <result property="weight" column="weight"></result>
+        <result property="shoeSize" column="shoesize"></result>
+        <result property="star" column="star"></result>
+        <result property="bloodType" column="bloodType"></result>
+        <result property="job" column="job"></result>
+        <result property="birthday" column="birthday"></result>
+        <result property="hobbies" column="hobbies"></result>
+        <result property="introduce" column="introduce"></result>
+        <result property="albums" column="albums"></result>
+        <result property="fans" column="fans"></result>
+        <result property="follows" column="follows"></result>
+        <result property="qq" column="qq"></result>
+        <result property="wechat" column="wechat"></result>
+        <result property="weibo" column="weibo"></result>
+        <result property="loginID" column="loginID"></result>
+        <result property="loginType" column="loginType"></result>
+        <result property="qingdou" column="qingdou"></result>
+        <result property="timelineCover" column="home_cover"></result>
+        <result property="editorCover" column="cover"></result>
+        <result property="likeCount" column="like_count"></result>
+        <result property="timeline" column="timeline"></result>
+        <result column="receiverName" property="receiverName"/>
+        <result column="receiverMobile" property="receiverMobile"/>
+        <result column="receiverPostCode" property="receiverPostCode"/>
+        <result column="receiverCity" property="receiverCity"/>
+        <result column="receiverAddress" property="receiverAddress"/>
+        <result column="focusByCurUser" property="focusByCurUser"/>
+        <result column="register_time" property="registerTime"/>
+        <result column="login_time" property="lastLoginTime"/>
+        <result column="login_times" property="loginTimes"/>
+        <result column="status" property="status"/>
+        <result column="type" property="type"/>
+        <result column="end_time" property="endTime"/>
+        <result column="begin_time" property="beginTime"/>
+    </resultMap>
+
+    <resultMap id="GUserCollections" type="com.wishes.yearOld.model.UsersCollection">
+        <result column="collectionId" property="collectionId"/>
+        <result column="albumId" property="albumId"/>
+        <result column="cover" property="cover"/>
+        <result column="pages" property="pages"/>
+        <result column="face" property="icon"/>
+        <result column="nickname" property="name"/>
+        <result column="isCollection" property="collection"/>
+        <result column="modelID" property="modelID"/>
+        <result column="modelName" property="modelName"/>
+        <result column="cert" property="cert"/>
+    </resultMap>
+    
+    <select id="getPhotoCollectionByUserId" resultMap="GUserCollections">
+        SELECT t.collectionId,p.id as albumId,p.cover,p.pages,pu.face,pu.nickname,p.modelID,p.modelName,
+        c.description as cert,p.title,p.description,
+        TRUE as isCollection FROM tgod_user_collection t
+        INNER JOIN tgod_photoalbum p on t.collectionId = p.id
+        INNER JOIN tgod_user pu on pu.id = p.modelID
+        LEFT JOIN tgod_certification c ON pu.certification = c.id
+        LEFT JOIN tgod_user u on u.id = t.userId
+        where t.collectionType = 2 and t.userId = #{userId}
+        ORDER BY p.publishTime DESC
+        LIMIT #{start},#{pageSize}
+    </select>
+       <select id="selectUser" parameterType="com.wishes.yearOld.model.User" resultMap="user">
+        select 
+        id,
+        loginID,
+        loginType,
+        user_group,
+        mobile,
+        wechat,
+        weibo,
+        qq,
+        zhifubao,
+        password,
+        email,
+        nickname,
+        face,
+        cover,
+        status,
+        auditTime,
+        auditid,
+        register_time,
+        login_time,
+        lock_status,
+        home_cover,
+        type,
+        begin_time,
+        end_time,
+        unionid,
+        certification
+        from 
+        tgod_user
+        <where>
+         <if test="id != null">
+              id=#{id}
+            </if>
+            <if test="loginID != null">
+                AND loginID=#{loginID}
+            </if>
+            
+        </where>
+    </select>
+</mapper>

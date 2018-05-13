@@ -1,0 +1,575 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wishes.yearOld.dao.TgodAlbumcountinfoMapper">
+  <resultMap id="BaseResultMap" type="com.wishes.yearOld.model.TgodAlbumcountinfo">
+    <constructor>
+      <idArg column="id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="view_count" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="sales" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="like_count" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="profitTotal" javaType="java.math.BigDecimal" jdbcType="DECIMAL" />
+      <arg column="modelProfitTotal" javaType="java.math.BigDecimal" jdbcType="DECIMAL" />
+      <arg column="photographerProfitTotal" javaType="java.math.BigDecimal" jdbcType="DECIMAL" />
+      <arg column="siteProfitTotal" javaType="java.math.BigDecimal" jdbcType="DECIMAL" />
+      <arg column="organProfitTotal" javaType="java.math.BigDecimal" jdbcType="DECIMAL" />
+      <arg column="downcount" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="click_count" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="total_cost" javaType="java.lang.Integer" jdbcType="INTEGER" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, view_count, sales, like_count, profitTotal, modelProfitTotal, photographerProfitTotal, 
+    siteProfitTotal, organProfitTotal,downcount,click_count,total_cost
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tgod_albumcountinfo
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tgod_albumcountinfo
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.wishes.yearOld.model.TgodAlbumcountinfo">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into tgod_albumcountinfo (view_count, sales, like_count, 
+      profitTotal, modelProfitTotal, photographerProfitTotal, 
+      siteProfitTotal, organProfitTotal, downcount
+      )
+    values (#{viewCount,jdbcType=INTEGER}, #{sales,jdbcType=INTEGER}, #{likeCount,jdbcType=INTEGER}, 
+      #{profittotal,jdbcType=DECIMAL}, #{modelprofittotal,jdbcType=DECIMAL}, #{photographerprofittotal,jdbcType=DECIMAL}, 
+      #{siteprofittotal,jdbcType=DECIMAL}, #{organprofittotal,jdbcType=DECIMAL}, #{downcount,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.wishes.yearOld.model.TgodAlbumcountinfo">
+    
+    insert into tgod_albumcountinfo
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+    <if test="id != null">
+        id,
+      </if>
+      <if test="viewCount != null">
+        view_count,
+      </if>
+      <if test="sales != null">
+        sales,
+      </if>
+      <if test="likeCount != null">
+        like_count,
+      </if>
+      <if test="profittotal != null">
+        profitTotal,
+      </if>
+      <if test="modelprofittotal != null">
+        modelProfitTotal,
+      </if>
+      <if test="photographerprofittotal != null">
+        photographerProfitTotal,
+      </if>
+      <if test="siteprofittotal != null">
+        siteProfitTotal,
+      </if>
+      <if test="organprofittotal != null">
+        organProfitTotal,
+      </if>
+      <if test="downcount != null">
+        downcount,
+      </if>
+       <if test="clickcount != null">
+        click_count,
+      </if>
+       <if test="totalcost != null">
+        total_cost,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+     <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="viewCount != null">
+        #{viewCount,jdbcType=INTEGER},
+      </if>
+      <if test="sales != null">
+        #{sales,jdbcType=INTEGER},
+      </if>
+      <if test="likeCount != null">
+        #{likeCount,jdbcType=INTEGER},
+      </if>
+      <if test="profittotal != null">
+        #{profittotal,jdbcType=DECIMAL},
+      </if>
+      <if test="modelprofittotal != null">
+        #{modelprofittotal,jdbcType=DECIMAL},
+      </if>
+      <if test="photographerprofittotal != null">
+        #{photographerprofittotal,jdbcType=DECIMAL},
+      </if>
+      <if test="siteprofittotal != null">
+        #{siteprofittotal,jdbcType=DECIMAL},
+      </if>
+      <if test="organprofittotal != null">
+        #{organprofittotal,jdbcType=DECIMAL},
+      </if>
+      <if test="downcount != null">
+        #{downcount,jdbcType=INTEGER},
+      </if>
+       <if test="clickcount != null">
+        #{clickcount,jdbcType=INTEGER},
+      </if>
+      <if test="totalcost != null">
+        #{totalcost,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wishes.yearOld.model.TgodAlbumcountinfo">
+    update tgod_albumcountinfo
+    <set>
+      <if test="viewCount != null">
+        view_count = #{viewCount,jdbcType=INTEGER},
+      </if>
+      <if test="sales != null">
+        sales = #{sales,jdbcType=INTEGER},
+      </if>
+      <if test="likeCount != null">
+        like_count = #{likeCount,jdbcType=INTEGER},
+      </if>
+      <if test="profittotal != null">
+        profitTotal = #{profittotal,jdbcType=DECIMAL},
+      </if>
+      <if test="modelprofittotal != null">
+        modelProfitTotal = #{modelprofittotal,jdbcType=DECIMAL},
+      </if>
+      <if test="photographerprofittotal != null">
+        photographerProfitTotal = #{photographerprofittotal,jdbcType=DECIMAL},
+      </if>
+      <if test="siteprofittotal != null">
+        siteProfitTotal = #{siteprofittotal,jdbcType=DECIMAL},
+      </if>
+      <if test="organprofittotal != null">
+        organProfitTotal = #{organprofittotal,jdbcType=DECIMAL},
+      </if>
+      <if test="downcount != null">
+        downcount = #{downcount,jdbcType=INTEGER},
+      </if>
+       <if test="clickcount != null">
+        click_count = #{clickcount,jdbcType=INTEGER},
+      </if>
+       <if test="totalcost != null">
+        total_cost = #{totalcost,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wishes.yearOld.model.TgodAlbumcountinfo">
+    update tgod_albumcountinfo
+    set view_count = #{viewCount,jdbcType=INTEGER},
+      sales = #{sales,jdbcType=INTEGER},
+      like_count = #{likeCount,jdbcType=INTEGER},
+      profitTotal = #{profittotal,jdbcType=DECIMAL},
+      modelProfitTotal = #{modelprofittotal,jdbcType=DECIMAL},
+      photographerProfitTotal = #{photographerprofittotal,jdbcType=DECIMAL},
+      siteProfitTotal = #{siteprofittotal,jdbcType=DECIMAL},
+      organProfitTotal = #{organprofittotal,jdbcType=DECIMAL},
+      downcount = #{downcount,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+    <!-- 传入对象查询图集 统计列表信息-->
+  <select id="queryAlbumStatistics" parameterType="com.wishes.yearOld.model.TgodAlbumcountinfo" resultMap="BaseResultMap">
+        SELECT 
+        T1.title,
+        T1.status,
+        T1.modelID,
+        T1.modelName,
+        T1.photographerID,
+        T1.photographerName,
+        T2.id,
+        T2.view_count,
+        T2.sales,
+        T2.like_count,
+        T2.profitTotal,
+        T2.modelProfitTotal,
+        T2.photographerProfitTotal,
+        T2.siteProfitTotal,
+        T2.organProfitTotal,
+        T2.downcount,
+        T2.click_count,
+        T2.total_cost
+        from tgod_photoalbum T1 left join tgod_albumcountinfo T2
+        on T1.id=T2.id
+        <where>
+            <if test="id != null and id != '' ">
+              and  T1.id =#{id}
+            </if>
+            <if test="title != null and title != '' ">
+                and T1.title like '%${title}%'
+            </if>
+      
+             <if test="modelid != null and modelid != '' ">
+               and T1.modelID =#{modelid}
+            </if>
+            <if test="modelname != null and modelname != '' ">
+                and T1.modelName like '%${modelname}%'
+            </if>
+             <if test="photographerid != null and photographerid != '' ">
+               and T1.photographerID like '%${photographerid}%'
+            </if>
+            <if test="photographername != null and photographername != '' ">
+              and  T1.photographerName like '%${photographername}%'
+            </if>
+           
+            <if test="type != null and type != '' ">
+                and T1.type = #{type}
+            </if>
+        </where>
+        ORDER BY T1.id desc
+         <if test="pageSize != 0 and pageSize != null ">
+            limit #{start}, #{pageSize}
+          </if>
+   </select>
+  <!-- 传入对象查询图集 统计列表信息-->
+   <select id="queryAlbumInfoCount" parameterType="com.wishes.yearOld.model.TgodAlbumcountinfo" resultType="java.lang.Integer">
+        SELECT 
+        COUNT(1)
+        from tgod_photoalbum  T1
+        <where>
+          <if test="id != null and id != '' ">
+              and  T1.id =#{id}
+            </if>
+            <if test="title != null and title != '' ">
+                and T1.title like '%${title}%'
+            </if>
+      
+             <if test="modelid != null and modelid != '' ">
+               and T1.modelID =#{modelid}
+            </if>
+            <if test="modelname != null and modelname != '' ">
+                and T1.modelName like '%${modelname}%'
+            </if>
+             <if test="photographerid != null and photographerid != '' ">
+               and T1.photographerID like '%${photographerid}%'
+            </if>
+            <if test="photographername != null and photographername != '' ">
+              and  T1.photographerName like '%${photographername}%'
+            </if>
+           
+            <if test="type != null and type != '' ">
+                and T1.type = #{type}
+            </if>
+        </where>
+   </select>
+    <!-- 一个图集专辑总销量列表信息-->
+  <select id="queryOneAlbumSalesTotal" parameterType="com.wishes.yearOld.model.TgodAlbumcountinfo" resultMap="BaseResultMap">
+        SELECT 
+        T1.id,
+        T1.like_count,
+        T1.view_count,
+        T1.downcount,
+        T1.profitTotal,
+        T1.modelProfitTotal,
+        T1.photographerProfitTotal,
+        (select count(T2.price) from  tgod_orderProfit T2 where T2.product_type=2 and T1.id=T2.product_id) as downtotalPrice,
+        (select count(T2.price) from  tgod_orderProfit T2 where T2.product_type=1 and T1.id=T2.product_id) as viewtotalPrice,
+        T1.profitTotal,
+        T1.modelProfitTotal,
+        T1.photographerProfitTotal,
+        T1.siteProfitTotal
+       
+        from  tgod_albumcountinfo T1 
+        <where>
+            <if test="id != null">
+                T1.id =#{id}
+            </if>
+        </where>
+   </select>
+  
+    <!-- 动态列表发布查询-->
+  <select id="queryDynamicAlbum" parameterType="com.wishes.yearOld.model.TgodAlbumcountinfo" resultType="com.wishes.yearOld.model.TgodAlbumcountinfo">
+        SELECT 
+        T1.id  as modelid,
+        T1.nickname as modelname,
+        (select count(1) from tgod_photoalbum T2 where 
+        T2.modelID=T1.id and T2.type<![CDATA[<>1]]>
+         <if test="fromTime != null and fromTime != '' ">
+           and   T2.publishTime &gt;=date_format(#{fromTime},'%Y-%m-%d %H:%i:%s')
+         </if>
+          <if test="toTime != null and toTime != '' ">
+           and     T2.publishTime &lt;=date_format(#{toTime},'%Y-%m-%d %H:%i:%s')
+         </if>
+        ) as dynamicCount,
+        (select count(1) from tgod_photoalbum T2 where 
+        T2.modelID=T1.id and T2.type=3 and T2.status=1
+            <if test="fromTime != null and fromTime != '' ">
+           and   T2.publishTime &gt;=date_format(#{fromTime},'%Y-%m-%d %H:%i:%s')
+         </if>
+          <if test="toTime != null and toTime != '' ">
+           and     T2.publishTime &lt;=date_format(#{toTime},'%Y-%m-%d %H:%i:%s')
+         </if>
+        ) as redPassCount,
+        (select count(1) from tgod_photoalbum T2 
+        where T2.modelID=T1.id and T2.type=3 
+        and T2.status<![CDATA[<>1]]>
+            <if test="fromTime != null and fromTime != '' ">
+           and   T2.publishTime &gt;=date_format(#{fromTime},'%Y-%m-%d %H:%i:%s')
+         </if>
+          <if test="toTime != null and toTime != '' ">
+           and     T2.publishTime &lt;=date_format(#{toTime},'%Y-%m-%d %H:%i:%s')
+         </if>
+         ) as redNoPassCount,
+        (select count(1) from tgod_photoalbum T2 
+        where T2.modelID=T1.id and T2.type=2 and  T2.status=1
+           <if test="fromTime != null and fromTime != '' ">
+           and   T2.publishTime &gt;=date_format(#{fromTime},'%Y-%m-%d %H:%i:%s')
+         </if>
+          <if test="toTime != null and toTime != '' ">
+           and     T2.publishTime &lt;=date_format(#{toTime},'%Y-%m-%d %H:%i:%s')
+         </if>
+         ) as dynamicPassCount,
+        (select count(1) from tgod_photoalbum T2 
+        where T2.modelID=T1.id and T2.type=2 and T2.status<![CDATA[<>1]]>
+           <if test="fromTime != null and fromTime != '' ">
+           and   T2.publishTime &gt;=date_format(#{fromTime},'%Y-%m-%d %H:%i:%s')
+         </if>
+          <if test="toTime != null and toTime != '' ">
+           and     T2.publishTime &lt;=date_format(#{toTime},'%Y-%m-%d %H:%i:%s')
+         </if>
+        ) as dynamicNoPassCount
+        from tgod_user T1 
+        <where>
+        T1.id in (select T.modelID  from tgod_photoalbum T where T.status=1 )
+            <if test="modelname != null and modelname !=''">
+             and (T1.id =#{modelname} or T1.nickname like '%${modelname}%')
+            </if>     
+        </where>
+         <if test="pageSize != 0 and pageSize != null ">
+            limit #{start}, #{pageSize}
+          </if>
+   </select>
+   
+    <!-- 动态列表发布查询总条数-->
+  <select id="queryDynamicAlbumCount" parameterType="com.wishes.yearOld.model.TgodAlbumcountinfo" resultType="java.lang.Integer">
+        SELECT 
+        count(T1.id) 
+        from tgod_user T1 
+        <where>
+         T1.id in (select T.modelID  from tgod_photoalbum T where T.status=1 )
+     <!--        <if test="modelid != null">
+               and  T1.id =#{modelid}
+            </if>
+            <if test="modelname != null">
+                T1.nickname like '%${modelname}%'
+            </if> -->
+        <!--  <if test="modelname != null and modelname!=''">
+             and T1.id =#{modelname}
+            </if>  -->
+            <if test="modelname != null and modelname !=''">
+             and (T1.id =#{modelname} or T1.nickname like '%${modelname}%')
+            </if>
+        </where>
+        
+   </select>
+   <!-- 动态销量列表查询-->
+  <select id="queryDynamicSalesAlbum" parameterType="com.wishes.yearOld.model.TgodAlbumcountinfo" resultType="com.wishes.yearOld.model.TgodAlbumcountinfo">
+        SELECT 
+        T1.id,
+        T1.type,
+        T1.modelID,
+        T1.modelName,
+        T1.roleid,
+        T1.rolename,
+        T1.publishTime,
+        (select count(1) from tgod_order where status=3
+        and  album_id=T1.id
+        <if test="fromTime != null and fromTime != '' ">
+        and date_format(finish_time, '%Y%m ')=#{fromTime}
+        </if>
+        ) as sales,
+        (select count(total_amount) from tgod_order where status=3 
+        and  album_id=T1.id
+        <if test="fromTime != null and fromTime != '' ">
+        and date_format(finish_time, '%Y%m ')=#{fromTime}
+        </if>
+        ) as profitTotal,
+        (select count(1) from tgod_album_view_log where  album_id=T1.id
+        <if test="fromTime != null and fromTime != '' ">
+        and date_format(view_time, '%Y%m ')=#{fromTime}
+        </if>
+        ) as viewCount
+        from tgod_photoalbum T1 left join tgod_albumcountinfo T2
+        on T1.id = T2.id
+        where T1.type<![CDATA[<>1]]> and T1.status=1
+           <if test="id != null and id != '' ">
+              and  T1.id =#{id}
+            </if>
+            <if test="modelid != null and modelid != '' ">
+              and  T1.modelID =#{modelid}
+            </if>
+           <if test="modelname != null and modelname != '' ">
+               and T1.modelName like '%${modelname}%'
+            </if>
+           <!--  <if test="type != null and type != '' ">
+               and T1.type  =#{type}
+            </if>  -->
+             <if test="pageSize != 0 and pageSize != null ">
+            limit #{start}, #{pageSize}
+          </if>
+   </select>
+   <!-- 动态销量列表查询总条数-->
+  <select id="queryDynamicSalesAlbumCount" parameterType="com.wishes.yearOld.model.TgodAlbumcountinfo" resultType="java.lang.Integer">
+        SELECT 
+        count(1)
+        from tgod_photoalbum T1 
+        where T1.type<![CDATA[<>1]]> and T1.status=1
+          <if test="modelid != null and modelid != '' ">
+              and  T1.modelID =#{modelid}
+            </if>
+           <if test="modelname != null and modelname != '' ">
+               and T1.modelName like '%${modelname}%'
+            </if>
+           <!--  <if test="type != null and type != '' ">
+               and T1.type  =#{type}
+            </if> -->
+           
+   </select>
+   <!--红包动态记录-->
+  <select id="queryRedAlbumRecord" parameterType="com.wishes.yearOld.model.TgodAlbumcountinfo" resultType="com.wishes.yearOld.model.TgodAlbumcountinfo">
+        SELECT 
+        date_format(T1.finish_time, '%Y') as year,
+        date_format(T1.finish_time, '%m') as month,
+        count(1) as sales,
+        count(T1.total_amount) as profitTotal,
+        max(T1.total_amount) as price,
+        (select max(costPrice) from tgod_costtype where costdesc='动态成本') as costPrice,
+        max(T2.level) level,
+        count(T2.allocationAmount) userAmount,
+        (select count(allocationAmount) as allocationAmount  
+        from tgod_orderprofit 
+        where profit_user_type is null and orderId=T1.id) as platformAmount,
+        (select count(1) from tgod_album_view_log where  album_id=T1.album_id
+        <if test="fromTime != null and fromTime != '' ">
+        and date_format(T1.view_time, '%Y%m')=#{fromTime}
+        </if>) as viewCount,
+        max(T2.profitRatio) profitRatio
+        from tgod_order T1 left join (select orderId,max(level) as level,max(profit_ratio) as profitRatio,count(allocationAmount) as allocationAmount  from tgod_orderprofit where profit_user_type is not null group by orderId) T2
+        on T1.id=T2.orderId
+        and  T1.status=3 
+        <if test="albumid != null and albumid != '' ">
+        and T1.album_id=#{albumid}
+        </if>
+        <if test="modelid != null and modelid != '' ">
+        and T1.buyer_id=#{modelid}
+        </if>
+        <if test="fromTime != null and fromTime != '' ">
+        and date_format(T1.finish_time, '%Y%m')=#{fromTime}
+        </if>
+         group by date_format(T1.finish_time, '%Y%m')
+          <if test="pageSize != 0 and pageSize != null ">
+            limit #{start}, #{pageSize}
+          </if>
+   </select>
+   <!--红包动态记录总条数-->
+  <select id="queryRedAlbumRecordCount" parameterType="com.wishes.yearOld.model.TgodAlbumcountinfo" resultType="java.lang.Integer">
+        SELECT 
+        count(1) 
+        from(select max(T1.id) from  tgod_order T1 
+        where T1.status=3 
+        <if test="albumid != null and albumid != '' ">
+        and T1.album_id=#{albumid}
+        </if>
+        <if test="modelid != null and modelid != '' ">
+        and T1.buyer_id=#{modelid}
+        </if>
+        <if test="fromTime != null and fromTime != '' ">
+        and date_format(T1.finish_time, '%Y%m')=#{fromTime}
+        </if>
+         group by date_format(T1.finish_time, '%Y%m')) as T
+   </select>
+   <!--图文动态记录-->
+  <select id="queryDynamicAlbumRecord" parameterType="com.wishes.yearOld.model.TgodAlbumcountinfo" resultType="com.wishes.yearOld.model.TgodAlbumcountinfo">
+         select 
+         date_format(T1.view_time, '%Y') as year,
+         date_format(T1.view_time, '%m') as month,
+         count(1) as viewCount
+         from 
+         tgod_album_view_log T1 
+         where  
+         <if test="albumid != null and albumid != '' ">
+         T1.album_id=#{albumid}
+         </if>
+         <if test="modelid != null and modelid != '' ">
+         and T1.model_id=#{modelid}
+         </if>
+        <if test="fromTime != null and fromTime != '' ">
+        and date_format(T1.view_time, '%Y%m')=#{fromTime}
+        </if>
+        group by date_format(T1.view_time, '%Y%m')
+         <if test="pageSize != 0 and pageSize != null ">
+            limit #{start}, #{pageSize}
+          </if>
+   </select>
+  <!--图文动态记录-->
+  <select id="queryDynamicAlbumRecordCount" parameterType="com.wishes.yearOld.model.TgodAlbumcountinfo" resultType="java.lang.Integer">
+        SELECT 
+        count(1) 
+        from(select max(T1.id) from  tgod_album_view_log T1 
+        where  
+        <if test="albumid != null and albumid != '' ">
+         T1.album_id=#{albumid}
+         </if>
+         <if test="modelid != null and modelid != '' ">
+         and T1.model_id=#{modelid}
+         </if>
+        <if test="fromTime != null and fromTime != '' ">
+        and date_format(T1.view_time, '%Y%m')=#{fromTime}
+        </if>
+        group by date_format(T1.view_time, '%Y%m')
+         
+   </select>
+   <!--财务列表-->
+  <select id="queryFinancialRecord" parameterType="com.wishes.yearOld.model.TgodAlbumcountinfo" resultType="com.wishes.yearOld.model.TgodAlbumcountinfo">
+         select 
+         T1.id,
+         T1.nickname,
+         T5.amount,
+         T5.cashout,
+         T5.balance,
+         T5.qingdou_amount as qingdouAmount,
+         (select count(qingdou_amount) from tgod_records_qingdou where  user_id=T1.id) as qingdouAmountconsum,
+         (select count(1) from tgod_photoalbum where status=1 and type=1 and modelID=T1.id) as albumCount,
+         (select count(1) from tgod_photoalbum where status=1 and type in('2','3') and modelID=T1.id) as dynamicCount,
+         (select count(T5.allocationAmount) from 
+         (select T2.allocationAmount,T2.profit_user_id from tgod_orderprofit T2 left join tgod_photoalbum T3 on T2.product_id =T3.id  and T3.type=1 ) as T5  where  T5.profit_user_id=T1.id) as albumAmount,
+         (select count(T5.allocationAmount) from 
+         (select T2.allocationAmount,T2.profit_user_id from tgod_orderprofit T2 left join tgod_photoalbum T3 on T2.product_id =T3.id  and T3.type in(2,3) ) as T5  where  T5.profit_user_id=T1.id) as dynamicAmount
+         from 
+         tgod_user T1 left join   tgod_user_account T5
+         on T1.id = T5.id
+         and T1.user_group=1
+        <if test="id != null">
+        and T1.id=#{id}
+        </if>
+         <if test="nickname != null">
+        and T1.nickname=#{nickname}
+        </if>
+         <if test="pageSize != 0 and pageSize != null ">
+            limit #{start}, #{pageSize}
+          </if>
+   </select>
+    <!--财务列表总条数-->
+  <select id="queryFinancialRecordCount" parameterType="com.wishes.yearOld.model.TgodAlbumcountinfo" resultType="java.lang.Integer">
+         select 
+        count(1) 
+         from 
+         tgod_user T1 left join   tgod_user_account T5
+         on T1.id = T5.id
+         and T1.user_group=1
+        <if test="id != null">
+        and T1.id=#{id}
+        </if>
+         <if test="nickname != null">
+        and T1.nickname=#{nickname}
+        </if> 
+   </select>
+</mapper>

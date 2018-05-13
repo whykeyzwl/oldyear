@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wishes.yearOld.dao.ActivityDao">
+
+    <resultMap id="Activity" type="com.wishes.yearOld.model.Activity">
+        <id column="ID" property="id"/>
+        <result column="TITLE" property="title"/>
+        <result column="CREATED_TIME" property="createdTime"/>
+        <result column="BEGIN_TIME" property="beginTime"/>
+        <result column="END_TIME" property="endTime"/>
+        <result column="COVER_PROCESS" property="coverProcess"/>
+        <result column="COVER_FINISHED" property="coverFinished"/>
+        <result column="INTRODUCE" property="introduce"/>
+        <result column="PHOTOGRATHERS" property="photoGrathers"/>
+        <result column="RAISE_TARGET" property="raiseTarget"/>
+        <result column="RAISED" property="raised"/>
+        <result column="LOCATION" property="location"/>
+    </resultMap>
+
+    <resultMap id="ActivityModel" type="com.wishes.yearOld.model.ActivityModel">
+        <id column="ID" property="id"/>
+        <result column="ACTIVITYID" property="activityId"/>
+        <result column="MODELID" property="modelId"/>
+        <result column="MODEL_NICKNAME" property="modelNickName"/>
+        <result column="COVER" property="covor"/>
+        <result column="MODEL_INTRO" property="modelIntro"/>
+        <result column="RAISED" property="raised"/>
+        <result column="SUCCESSED" property="successed"/>
+        <result column="SUPPORTERS" property="supporters"/>
+        <result column="PROGRESS" property="progress"/>
+    </resultMap>
+
+    <resultMap id="ActivityRule" type="com.wishes.yearOld.model.ActivityRule">
+        <id column="ID" property="id"/>
+        <result column="ACTIVITYID" property="activityId"/>
+        <result column="MONEY" property="money"/>
+        <result column="DOWNLOAD_LIMIT" property="downloadLimit"/>
+        <result column="SUPORTER_LIMIT" property="suporterLimit"/>
+        <result column="INTRODUCE" property="introduce"/>
+        <result column="RULE_ORDER" property="order"/>
+    </resultMap>
+
+    <resultMap id="ActivitySupporter" type="com.wishes.yearOld.model.ActivitySupporter">
+        <id column="ID" property="id"/>
+        <result column="ACTIVITYID" property="activityId"/>
+        <result column="RULEID" property="ruleId"/>
+        <result column="MODELID" property="modelId"/>
+        <result column="MONEY" property="money"/>
+        <result column="USERID" property="userId"/>
+        <result column="NICKNAME" property="nickName"/>
+        <result column="FACE" property="face"/>
+        <result column="SUPORT_TIME" property="suportTime"/>
+        <result column="ORDER_ID" property="orderId"/>
+        <result column="focusByCurUser" property="focusByCurUser"/>
+    </resultMap>
+
+    <select id="loadActivityRule" parameterType="java.lang.Integer" resultMap="ActivityRule">
+        select * from activity_rule t where t.id = #{id} 
+    </select>
+
+    <select id="loadActivityModel" parameterType="java.lang.Integer" resultMap="ActivityModel">
+        select t.*, t.raised*100/a.raise_target as PROGRESS from activity_model t
+        join activity a on t.activityId = a.id
+        where t.id = #{id}
+    </select>
+
+    <select id="list" parameterType="com.wishes.yearOld.model.Activity" resultMap="Activity">
+        SELECT * FROM activity where is_show=1
+        order by end_time desc limit #{start},#{pageSize}
+    </select>
+
+    <select id="detail" parameterType="java.lang.Integer" resultMap="Activity">
+        SELECT * FROM activity where id = #{id}
+    </select>
+
+    <select id="queryRules" parameterType="com.wishes.yearOld.model.ActivityRule" resultMap="ActivityRule">
+        SELECT * FROM activity_rule
+        <where>
+            <if test="activityId != null">
+                activityId = #{activityId}
+            </if>
+        </where>
+         order by RULE_ORDER limit #{start},#{pageSize}
+    </select>
+
+    <select id="queryPhotographer" resultType="com.wishes.yearOld.model.User">
+        SELECT Id,nickname FROM tgod_user where user_group=2 and id in (${photographers})
+    </select>
+
+    <select id="supporters" resultMap="ActivitySupporter">
+        <if test="curUserId != null">
+        SELECT sup.*,1-isnull(f.id) as focusByCurUser FROM activity_supporter sup
+            left JOIN tgod_users_focus f
+            on f.focusId = sup.userid and f.userId=#{curUserId} and f.focusType=0
+        </if>
+        <if test="curUserId == null">
+        SELECT sup.*,0 as focusByCurUser FROM activity_supporter sup
+        </if>
+        <where>
+            <if test="support.activityId != null">
+                sup.activityId = #{support.activityId}
+            </if>
+            <if test="support.modelId != null">
+                and sup.modelid = #{support.modelId}
+            </if>
+            <if test="support.ruleId != null">
+                and sup.ruleId = #{support.ruleId}
+            </if>
+        </where>
+        <if test="sort == 0 ">
+            order by sup.suport_time desc
+        </if>
+        <if test="sort == 1 ">
+            order by sup.money desc
+        </if>
+        limit #{support.start},#{support.pageSize}
+    </select>
+
+    <select id="queryModels" parameterType="com.wishes.yearOld.model.ActivityModel" resultMap="ActivityModel">
+        select t.*, t.raised*100/a.raise_target as PROGRESS from activity_model t
+        join activity a on t.activityId = a.id
+        <where>
+            <if test="activityId != null">
+                t.activityId = #{activityId}
+            </if>
+            <if test="modelId != null">
+                and t.modelId = #{modelId}
+            </if>
+            <if test="successed != null">
+                and t.successed = #{successed}
+            </if>
+        </where>
+        order by t.raised desc limit #{start},#{pageSize}
+    </select>
+
+    <insert id="saveActivitySupporter" parameterType="com.wishes.yearOld.model.ActivitySupporter">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into activity_supporter
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="activityId != null">
+                activityId,
+            </if>
+            <if test="ruleId != null">
+                ruleId,
+            </if>
+            <if test="modelId != null">
+                modelId,
+            </if>
+            <if test="money != null">
+                money,
+            </if>
+            <if test="userId != null">
+                userid,
+            </if>
+            <if test="nickName != null">
+                nickname,
+            </if>
+            <if test="face != null">
+                face,
+            </if>
+            <if test="suportTime != null">
+                suport_time,
+            </if>
+            <if test="orderId != null">
+                order_id,
+            </if>
+        </trim>
+        <trim prefix=" select " suffix=" from dual " suffixOverrides=",">
+            <if test="activityId != null">
+                #{activityId,jdbcType=INTEGER},
+            </if>
+            <if test="ruleId != null">
+                #{ruleId,jdbcType=INTEGER},
+            </if>
+            <if test="modelId != null">
+                #{modelId,jdbcType=INTEGER},
+            </if>
+            <if test="money != null">
+                #{money,jdbcType=DECIMAL},
+            </if>
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="nickName != null">
+                #{nickName,jdbcType=VARCHAR},
+            </if>
+            <if test="face != null">
+                #{face,jdbcType=VARCHAR},
+            </if>
+            <if test="suportTime != null">
+                #{suportTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="orderId != null">
+                #{orderId,jdbcType=INTEGER},
+            </if>
+        </trim>
+        <if test="orderId != null">
+            where not exists (select 1 from activity_supporter where order_id = #{orderId} )
+        </if>
+    </insert>
+
+    <select id="findActivitySupporterByOrderId" parameterType="com.wishes.yearOld.model.ActivitySupporter" resultMap="ActivitySupporter">
+        select * from activity_supporter where order_id = #{orderId}
+    </select>
+
+    <select id="activitySupporters" resultType="com.wishes.yearOld.model.ActivitySupporter">
+        <if test="curUserId != null">
+            select sup.userid userId,sup.nickname nickName,sup.face,
+            SUM(sup.money) totalMoney,1-isnull(f.id) as focusByCurUser
+            FROM activity_supporter sup
+            left JOIN tgod_users_focus f
+            on f.focusId = sup.userid and f.userId=#{curUserId} and f.focusType=0
+        </if>
+        <if test="curUserId == null">
+            select sup.userid userId,sup.nickname nickName,sup.face,
+            SUM(sup.money) totalMoney,0 as focusByCurUser
+            from activity_supporter sup
+        </if>
+        where sup.activityId = #{support.activityId}
+        <if test="support.modelId != null">
+            and sup.modelId = #{support.modelId}
+        </if>
+        group by sup.userid order by totalMoney desc limit #{support.start},#{support.pageSize};
+    </select>
+
+    <update id="updateModelRaised" >
+        update activity_model set raised = raised + #{raised},SUPPORTERS=SUPPORTERS+1 where modelId=#{modelId} and activityId=#{actId}
+    </update>
+
+    <update id="updateActivityRaised" >
+        update activity set raised = raised + #{raised} where id=#{id}
+    </update>
+
+    <select id="getModelCount" resultType="java.lang.Integer">
+        select count(*) from activity_model where activityId = #{activityId}
+    </select>
+
+    <select id="getAlbumCount" resultType="java.lang.Integer">
+        select count(*) from tgod_photoalbum t
+        INNER JOIN tgod_user u ON (u.user_group = 1 AND u.id = t.modelID)
+        where t.activityID = #{activityId}
+        <if test="modelId != null">
+            and t.modelId = #{modelId}
+        </if>
+    </select>
+
+    <select id="getSupporterCount" parameterType="com.wishes.yearOld.model.ActivitySupporter" resultType="java.lang.Integer">
+        select count(distinct(userId)) from activity_supporter
+        where activityId = #{activityId}
+        <if test="modelId != null">
+            and modelId = #{modelId}
+        </if>
+        <if test="ruleId != null">
+            and ruleId = #{ruleId}
+        </if>
+        <if test="userId != null">
+            and userId = #{userId}
+        </if>
+    </select>
+
+    <select id="getSupporterTimes" parameterType="com.wishes.yearOld.model.ActivitySupporter" resultType="java.lang.Integer">
+        select count(1) from activity_supporter
+        where activityId = #{activityId}
+        <if test="modelId != null">
+            and modelId = #{modelId}
+        </if>
+        <if test="ruleId != null">
+            and ruleId = #{ruleId}
+        </if>
+        <if test="userId != null">
+            and userId = #{userId}
+        </if>
+    </select>
+
+    <select id="loadActivity" parameterType="java.lang.Integer" resultMap="Activity">
+        select 
+        id,
+        title,
+        location,
+        created_time,
+        begin_time,
+        end_time,
+        cover_process,
+        cover_finished,
+        introduce,
+        photograthers,
+        raise_target,
+        raised,
+        is_success,
+        is_publish,
+        is_show,
+        position_count,
+        status
+        from 
+        activity t 
+        where t.id = #{id}
+    </select>
+    <select id="getRuleCount" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        select count(1) from activity_rule  where activityId = #{activityId}
+    </select>
+
+    <select id="queryByModelId"  resultMap="Activity">
+        SELECT 
+        a.id,
+        a.title,
+        a.location,
+        a.created_time,
+        a.begin_time,
+        a.end_time,
+        a.cover_process,
+        a.cover_finished,
+        a.introduce,
+        a.photograthers,
+        a.raise_target,
+        a.raised,
+        a.is_success,
+        a.is_publish,
+        a.is_show,
+        a.position_count,
+        a.status 
+        FROM activity a
+        join activity_model m on m.activityId = a.id
+        where m.modelId = #{modelId}
+        order by a.end_time desc limit #{start},#{pageSize}
+    </select>
+</mapper>

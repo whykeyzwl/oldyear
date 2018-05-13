@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wishes.yearOld.dao.GodMomentsDao">
+
+    <resultMap id="PhotoAlbum" type="com.wishes.yearOld.model.PhotoAlbum">
+        <id column="ID" property="id"/>
+        <result column="TITLE" property="title"/>
+        <result column="DESCRIPTION" property="description"/>
+        <result column="MODELID" property="modelId"/>
+        <result column="MODLENAME" property="modelName"/>
+        <result column="PHOTOGRAPHERID" property="photoGrapherId"/>
+        <result column="PHOTOGRAPHERNAME" property="photoGrapherName"/>
+        <result column="PRICE1" property="price1"/>
+        <result column="PRICE2" property="price2"/>
+        <result column="PRICE3" property="price3"/>
+        <result column="PHOTOGRAPHERPROFITRATE" property="photoGrapherProfitRate"/>
+        <result column="COVER" property="cover"/>
+        <result column="PAGES" property="pages"/>
+        <result column="ZIPLINK" property="ziplink"/>
+        <result column="SALES" property="sales"/>
+        <result column="ACTIVITYID" property="activityId"/>
+        <result column="STATUS" property="status"/>
+        <result column="CREATEDTIME" property="createdTime"/>
+        <result column="PUBLISHTIME" property="publishTime"/>
+        <result column="LASTUPDATETIME" property="lastUpdateTime"/>
+        <result column="CREATOR" property="creator"/>
+        <result column="REVIEWER" property="reviewer"/>
+        <result column="LIMITFREE" property="limitFree"/>
+        <result column="QINGDOU" property="qingdou"/>
+        <result column="LIKE_COUNT" property="likeCount"/>
+        <result column="VIEW_COUNT" property="viewCount"/>
+        <result column="RECOMMEND" property="recommend"/>
+        <result column="REAL_PRICE" property="realPrice"/>
+        <result column="unLockLV1" property="unLockLV1"/>
+        <result column="limitFreeTime" property="limitFreeTime"/>
+    </resultMap>
+
+    <resultMap id="GodMoments" type="com.wishes.yearOld.model.GodMoments">
+        <result column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="icon" property="icon"/>
+        <result column="audited" property="audited"/>
+        <result column="isCare" property="isCare"/>
+    </resultMap>
+    <!-- 获得女神列表，至少有一个图集，并按图集发布时间倒序排序 -->
+    <select id="queryGodNess" parameterType="GodMoments" resultMap="GodMoments">
+        select t.id,t.nickname as name,t.face as icon,ifnull(c.description,'') as audited,
+        <if test="userID != 0">
+        case
+        WHEN  l.focusId != null then 1
+        ELSE 0
+        end as isCare
+        </if>
+        <if test="userID == 0">
+            0 as isCare
+        </if>
+        FROM tgod_user t
+        LEFT JOIN tgod_certification c on t.certification = c.id
+        inner JOIN (select DISTINCT p.modelID,p.id,p.publishTime from (select modelID,id,publishTime,`level`,`status` from tgod_photoalbum ORDER BY publishTime DESC) p where p.status=1
+        <if test="controlLevel == 0">
+        and p.level <![CDATA[>=]]> #{controlLevel}
+        </if> 
+        <if test="controlLevel != 0">
+        and p.level <![CDATA[=]]> #{controlLevel}
+        </if>
+        GROUP BY p.modelID HAVING COUNT(p.modelID) >= 1 
+         ORDER BY p.publishTime desc) p1
+        on p1.modelID = t.id
+        <if test="userID != 0">
+          left join tgod_users_focus l on (l.focusId = t.id and l.focusType = 0 and l.userId = #{userID})
+        </if>
+        where t.user_group = 1 
+        order by p1.publishTime desc
+        <if test="pageSize &gt; 0">
+            limit #{start}, #{pageSize}
+        </if>
+    </select>
+    <!-- 随机获得女神列表，至少有一个图集，并按图集发布时间倒序排序 -->
+    <select id="queryGodNessRand" parameterType="GodMoments" resultMap="GodMoments">
+        select t.id,t.nickname as name,t.face as icon,ifnull(c.description,'') as audited,
+        <if test="userID != 0">
+            case
+            WHEN  l.focusId != null then 1
+            ELSE 0
+            end as isCare
+        </if>
+        <if test="userID == 0">
+            0 as isCare
+        </if>
+        FROM tgod_user t
+        LEFT JOIN tgod_certification c on t.certification = c.id
+        inner JOIN (select DISTINCT p.modelID,p.id,p.publishTime from tgod_photoalbum p where p.status=1
+        <if test="controlLevel == 0">
+        and p.level <![CDATA[>=]]> #{controlLevel}
+        </if> 
+        <if test="controlLevel != 0">
+        and p.level <![CDATA[=]]> #{controlLevel}
+        </if>
+        GROUP BY p.modelID HAVING COUNT(p.modelID) >= 1  ORDER BY p.publishTime desc) p1
+        on p1.modelID = t.id
+        <if test="userID != 0">
+            left join tgod_users_focus l on (l.focusId = t.id and l.focusType = 0 and l.userId = #{userID})
+        </if>
+        where t.user_group = 1 
+        ORDER BY RAND(),p1.publishTime limit 1
+    </select>
+
+    <!-- 根据模特ID取得图集列表 -->
+    <select id="queryAlbumByModuleID" parameterType="java.lang.Integer" resultType="PhotoAlbum">
+        SELECT t.id,t.cover as cover from tgod_photoalbum t
+        INNER JOIN tgod_user u ON (u.user_group = 1 AND u.id = t.modelID )
+        where t.status=1 and t.modelID = #{modelID}
+        order by t.publishTime desc
+    </select>
+     <!-- 根据模特ID和图集级别取得图集列表 -->
+    <select id="queryAlbumByGodmom" parameterType="GodMoments" resultType="PhotoAlbum">
+        SELECT t.id,t.cover as cover from tgod_photoalbum t
+        INNER JOIN tgod_user u ON (u.user_group = 1 AND u.id = t.modelID)
+        where t.status=1
+        <if test="id != null">
+        and t.modelID = #{id}
+        </if> 
+        <if test="controlLevel == 0">
+        and t.level <![CDATA[>=]]> #{controlLevel}
+        </if> 
+        <if test="controlLevel != 0">
+        and t.level <![CDATA[=]]> #{controlLevel}
+        </if> 
+        order by t.publishTime desc
+    </select>
+</mapper>

@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wishes.yearOld.dao.SysMessageMapper">
+  <resultMap id="BaseResultMap" type="com.wishes.yearOld.model.SysMessage">
+    <constructor>
+      <idArg column="id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="msg_type" javaType="java.lang.Byte" jdbcType="TINYINT" />
+      <arg column="status" javaType="java.lang.Byte" jdbcType="TINYINT" />
+      <arg column="updated_time" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <arg column="publish_time" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <arg column="publish_type" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="publish_obj" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="title" javaType="java.lang.String" jdbcType="VARCHAR" />
+    </constructor>
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.wishes.yearOld.model.SysMessage">
+    <constructor>
+      <idArg column="id" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="msg_type" javaType="java.lang.Byte" jdbcType="TINYINT" />
+      <arg column="status" javaType="java.lang.Byte" jdbcType="TINYINT" />
+      <arg column="updated_time" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <arg column="publish_time" javaType="java.util.Date" jdbcType="TIMESTAMP" />
+      <arg column="content" javaType="java.lang.String" jdbcType="LONGVARCHAR" />
+      <arg column="publish_type" javaType="java.lang.Integer" jdbcType="INTEGER" />
+      <arg column="publish_obj" javaType="java.lang.String" jdbcType="VARCHAR" />
+      <arg column="title" javaType="java.lang.String" jdbcType="VARCHAR" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, msg_type, status, updated_time, publish_time,publish_type,publish_obj,title
+  </sql>
+  <sql id="Blob_Column_List">
+    content
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from sys_message
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from sys_message
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.wishes.yearOld.model.SysMessage">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into sys_message (msg_type, status, updated_time, 
+      publish_time, content,publish_type,publish_obj,title)
+    values (#{msgType,jdbcType=TINYINT}, #{status,jdbcType=TINYINT}, #{updatedTime,jdbcType=TIMESTAMP}, 
+      #{publishTime,jdbcType=TIMESTAMP}, #{content,jdbcType=LONGVARCHAR}),
+      #{publishType,jdbcType=INTEGER},#{publishObj,jdbcType=VARCHAR},
+      #{publishObj,jdbcType=VARCHAR}
+  </insert>
+  <insert id="insertSelective" parameterType="com.wishes.yearOld.model.SysMessage">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into sys_message
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="msgType != null">
+        msg_type,
+      </if>
+      <if test="status != null">
+        status,
+      </if>
+      <if test="updatedTime != null">
+        updated_time,
+      </if>
+      <if test="publishTime != null">
+        publish_time,
+      </if>
+      <if test="publishType != null">
+        publish_type,
+      </if>
+      <if test="publishObj != null">
+        publish_obj,
+      </if>
+      <if test="title != null">
+        title,
+      </if>
+      <if test="content != null">
+        content,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="msgType != null">
+        #{msgType,jdbcType=TINYINT},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=TINYINT},
+      </if>
+      <if test="updatedTime != null">
+        #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="publishTime != null">
+        #{publishTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="publishType != null">
+        #{publishType,jdbcType=INTEGER},
+      </if>
+      <if test="publishObj != null">
+        #{publishObj,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null">
+        #{content,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.wishes.yearOld.model.SysMessage">
+    update sys_message
+    <set>
+      <if test="msgType != null">
+        msg_type = #{msgType,jdbcType=TINYINT},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="updatedTime != null">
+        updated_time = #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="publishTime != null">
+        publish_time = #{publishTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="content != null">
+        content = #{content,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="publishType != null">
+        publish_type = #{publishType,jdbcType=INTEGER},
+      </if>
+      <if test="publishObj != null">
+        publish_obj = #{publishObj,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.wishes.yearOld.model.SysMessage">
+    update sys_message
+    set msg_type = #{msgType,jdbcType=TINYINT},
+      status = #{status,jdbcType=TINYINT},
+      updated_time = #{updatedTime,jdbcType=TIMESTAMP},
+      publish_time = #{publishTime,jdbcType=TIMESTAMP},
+      content = #{content,jdbcType=LONGVARCHAR},
+      publish_type = #{publishType,jdbcType=INTEGER},
+      publish_obj = #{publishObj,jdbcType=VARCHAR},
+      title = #{title,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.wishes.yearOld.model.SysMessage">
+    update sys_message
+    set msg_type = #{msgType,jdbcType=TINYINT},
+      status = #{status,jdbcType=TINYINT},
+      updated_time = #{updatedTime,jdbcType=TIMESTAMP},
+      publish_time = #{publishTime,jdbcType=TIMESTAMP},
+      publish_type = #{publishType,jdbcType=INTEGER},
+      publish_obj = #{publishObj,jdbcType=VARCHAR},
+      title = #{title,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <select id="selectSysMessageList" parameterType="map" resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from sys_message
+    where status=1 and publish_time &lt;= #{currentTime}
+    and (publish_type=0 or (publish_type=1 and publish_obj=#{userGroup})
+    or (publish_type=3 and containId(#{userId},publish_obj)>0))
+    ORDER BY publish_time DESC limit #{start},#{pageSize}
+  </select>
+
+  <select id="selectReferenceByUserId" resultType="com.wishes.yearOld.model.Reference" parameterType="map">
+    select * from tgod_reference where referUserId = #{userId} AND status = #{status} ORDER BY commentTime DESC limit #{start},#{pageSize}
+  </select>
+
+  <select id="queryNewSysMessageCount" resultType="java.lang.Integer">
+    select count(*) from sys_message where
+    status=1 and publish_time &lt;= #{currentTime}
+    and (publish_type=0 or (publish_type=1 and publish_obj=#{userGroup})
+    or (publish_type=3 and containId(#{userId},publish_obj)>0))
+    <if test="lastUpdateTime!=null">
+      and publish_time > #{lastUpdateTime, jdbcType=TIMESTAMP}
+    </if>
+  </select>
+
+  <select id="queryNewReferenceCount" resultType="java.lang.Integer">
+    select count(*) from tgod_reference where referUserId = #{userId}
+    AND status = 0
+    <if test="lastUpdateTime!=null">
+      and commentTime > #{lastUpdateTime, jdbcType=TIMESTAMP}
+    </if>
+  </select>
+
+</mapper>
