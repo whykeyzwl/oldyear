@@ -508,13 +508,14 @@ public class UserController {
         if(type == null){
             return Result.BuildFailResult(ResponseCode.SC_BAD_REQUEST, "三方授权类型不能为空");
         }
-        String  unionids = request.getParameter("unionid");
+        //String  unionids = request.getParameter("unionid");
         User user = userService.findByLoginId(openId, type);
         if(user == null){
+        	//dblog.info(thirdStr+"用户"+userName+"从手机端第三方注册成功");
         	//opendid没有注册过用户
-        	User userunion = userService.findByLoginId(unionids, type);
-        	if(userunion==null){
-            user = userService.register(unionids,type,imgUrl, nickName);
+        	//User userunion = userService.findByLoginId(unionids, type);
+        	//if(userunion==null){
+            user = userService.register(openId,type,imgUrl, nickName);
             if(user == null){
                 return Result.BuildFailResult(ResponseCode.SC_INTERNAL_SERVER_ERROR, "服务器异常注册失败");
             }
@@ -532,10 +533,10 @@ public class UserController {
             else if(type==3)
                 thirdStr = "微博";
             dblog.info(thirdStr+"用户"+userName+"从手机端第三方注册成功");
-        	}
+        	//}
             
         }
-
+        logger.info("======= "+user.getLoginID()+"====="+user.getLoginType());
         if(user.getStatus()==1){
             return Result.BuildFailResult(ResponseCode.SC_BAD_REQUEST, "用户已被停用，请联系管理员");
         }
@@ -546,7 +547,7 @@ public class UserController {
         //将passportId与user信息存入缓存
         userService.syncUserToCache(passportId, user);
         user.setLastLoginTime(new Date());
-        user.setUnionid(unionids);
+        user.setUnionid(openId);
         userService.updateAtLogin(user);
         logger.info("通过第三方登录成功,  passportId: "+passportId);
         MDC.put("userId",user.getId().toString());

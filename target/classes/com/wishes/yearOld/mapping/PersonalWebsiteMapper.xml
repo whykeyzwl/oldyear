@@ -27,10 +27,10 @@
     (CASE
      WHEN
      LOCATE('http', face)<![CDATA[ <=]]>0
-     THEN CONCAT_WS('','http://image.qingdouke.com/',face)
+     THEN CONCAT_WS('','http://47.95.207.69/',face)
      ELSE face
      END ) as face,
-     CONCAT_WS('','http://image.qingdouke.com',home_cover) home_cover,now() as sysDate
+     CONCAT_WS('','http://47.95.207.69',home_cover) home_cover,now() as sysDate
      FROM tgod_user 
      <include refid="mainSqlWhere"/>
     </select>

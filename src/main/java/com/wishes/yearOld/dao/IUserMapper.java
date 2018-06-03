@@ -1,11 +1,13 @@
 package com.wishes.yearOld.dao;
 
 
+
 import com.wishes.yearOld.model.*;
 
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +42,7 @@ public interface IUserMapper {
     int updateValue(@Param("itemName")String itemName,@Param("itemValue") Date itemValue ,@Param("userId") Integer userId);
     int updateValue(@Param("itemName")String itemName,@Param("itemValue") Double itemValue,@Param("userId") Integer userId);
     int updateValueCount(@Param("itemName")String itemName,@Param("itemValue") Integer itemValue,@Param("userId") Integer userId);
-
+    int updateCacheCount(@Param("itemValue") BigDecimal itemValue,@Param("userId") Integer userId);
     int updateMobile(@Param("mobile")String mobile, @Param("userId")Integer userId);
 
     String password(@Param("userId")int userId);

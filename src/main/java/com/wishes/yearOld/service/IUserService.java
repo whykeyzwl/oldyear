@@ -4,7 +4,10 @@ package com.wishes.yearOld.service;
 
 import com.wishes.yearOld.model.*;
 
+import java.math.BigDecimal;
 import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
 
 /**
  * Created by zouyu on 2016/9/19.
@@ -189,4 +192,8 @@ public interface IUserService {
     int updateAtLoginTimes(User user);
     
     User selectUser(User user);
+    
+    int updateCacheCount(BigDecimal itemValue,Integer userId);
+
+   
 }

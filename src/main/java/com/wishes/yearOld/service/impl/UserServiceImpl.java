@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -431,5 +432,11 @@ public class UserServiceImpl implements IUserService {
 	public User selectUser(User user) {
 		
 		return userMapper.selectUser(user);
+	}
+
+	@Override
+	public int updateCacheCount(BigDecimal itemValue,Integer userId) {
+
+		return userMapper.updateCacheCount(itemValue,userId);
 	}
 }

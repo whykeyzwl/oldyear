@@ -244,6 +244,15 @@
         </if>
            
     </update>
+       <update id="updateCacheCount" parameterType="map">
+        UPDATE 
+        tgod_user 
+        SET 
+        amountcash = amountcash+ #{itemValue}
+        where id=#{userId}      
+      
+           
+    </update>
     <update id="updateMobile" parameterType="map">
         UPDATE tgod_user SET mobile = #{mobile}, loginID = if(loginType=0, #{mobile}, loginID) where id=#{userId}
     </update>

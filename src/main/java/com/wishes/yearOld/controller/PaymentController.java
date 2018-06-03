@@ -525,7 +525,7 @@ public class PaymentController {
 
         //商品描述 是 String(128) 商品描述，如：天天爱消除-游戏充值
         if(body == null) {
-            params.put("body", "青豆客" + "-" + (good.getGoodsType() == 1 ? "图集" : "活动"));
+            params.put("body", " 时光相册" + "-" + (good.getGoodsType() == 1 ? "图集" : "活动"));
         } else {
             params.put("body", body);
         }
@@ -603,6 +603,8 @@ public class PaymentController {
         	//再次签名
         	String paySign=PayUtil.sign(stringSignTemp, "&key="+AppPayConfig.WECHATXCX_PREPAY_ID, "utf-8").toUpperCase();
         	datas.put("paySign", paySign);
+        	
+        	 
         	 Order order = new Order(good);
              order.setBuyerId(user.getId());
              order.setOrderNumber(out_trade_no);
@@ -994,6 +996,9 @@ public class PaymentController {
                 }else if(resultCode.contains(AppPayConfig.WECHAT_SUCCESS)){//成功接收通知(交易成功)
 
                     if(order.getStatus() != Constant.ORDER_FINISHED){//第一次处理通知
+                    	PhotoAlbum photoAlbums  =photoAlbumService.findById(order.getAlbumId());
+                    	//修改可提现金额
+                    	userService.updateCacheCount(order.getTotalAmount(), photoAlbums.getModelId());
                         order.setStatus(Constant.ORDER_FINISHED);
                         Date temp = new Date();
                         order.setNotifyTime(temp);

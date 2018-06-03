@@ -73,7 +73,7 @@ public class CommonController {
                 if(String.valueOf(curUserId)!=""){
               	   User users = new User();
               	   users.setId(curUserId);//用户id
-              	   users.setFace("http://image.qingdouke.com/"+PathUtil.getImageFileUrlFromPath(imageFile.getPath()));//用户封面
+              	   users.setFace("http://47.95.207.69/"+PathUtil.getImageFileUrlFromPath(imageFile.getPath()));//用户封面
               	   userService.updateCover(users);
                  }
                 logger.info("上传图像文件:" + imageFile.getPath()+"最终图片路径："+PathUtil.getImageFileUrlFromPath(imageFile.getPath()));

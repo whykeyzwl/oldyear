@@ -145,7 +145,7 @@ public class Constant {
     public static final byte TIMELINE_COMMENT_TYPE = 2;
 
     // TODO: 需要设置
-     public static final String IMAGE_BASE="http://image.qingdouke.com/";
+     public static final String IMAGE_BASE="http://47.95.207.69/";
      // public static final String IMAGE_BASE="http://192.168.2.196:8080/tgod_app_api/home";
 
     // 一次发送短信验证码的有效时间，默认5分钟
