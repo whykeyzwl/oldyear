@@ -51,6 +51,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -206,6 +207,7 @@ public class UploadPhotoAlbumController {
         PhotoAlbum photoAlbums = new PhotoAlbum();//图集信息
         String contents = request.getParameter("content");//文字内容描述
         String titles = request.getParameter("title");//标题
+        String viewprice = request.getParameter("viewprice");//标题
         String positions = request.getParameter("position");//所在位置
         String username="";
         if(request.getParameter("username")!="" && request.getParameter("username")!="null"){        
@@ -222,6 +224,7 @@ public class UploadPhotoAlbumController {
         photoAlbums.setPublishTime(new Date());//
         photoAlbums.setLastUpdateTime(new Date());
         photoAlbums.setPositioninfo(positions);
+        photoAlbums.setViewprice(new BigDecimal(viewprice));
         photoAlbums.setIsQdk(0);//用户自定义发布
         System.out.println("======="+request.getParameter("photo"));
         String listImage=request.getParameter("photo");

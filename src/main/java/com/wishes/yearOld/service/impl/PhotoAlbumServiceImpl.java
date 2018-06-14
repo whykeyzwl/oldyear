@@ -632,6 +632,8 @@ public class PhotoAlbumServiceImpl implements PhotoAlbumService {
      */
 	@Override
 	public ArrayList<Photoalbuminfo> queryBuminfo(Photoalbuminfo photoalbuminfo,Integer start,Integer pageSize) {
+	     // photoalbuminfo.setStart(start);
+         //   photoalbuminfo.setPageSize(pageSize);
 		ArrayList<Photoalbuminfo> lstBuminfo = photoAlbumDao.queryBuminfo(photoalbuminfo);
 		return lstBuminfo;
 	}

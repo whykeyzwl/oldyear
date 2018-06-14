@@ -731,114 +731,11 @@
       <if test="title != null">
         title = #{title,jdbcType=VARCHAR},
       </if>
-      <if test="modelid != null">
-        modelID = #{modelid,jdbcType=INTEGER},
-      </if>
-      <if test="modelname != null">
-        modelName = #{modelname,jdbcType=VARCHAR},
-      </if>
-      <if test="photographerid != null">
-        photographerID = #{photographerid,jdbcType=INTEGER},
-      </if>
-      <if test="photographername != null">
-        photographerName = #{photographername,jdbcType=VARCHAR},
-      </if>
       <if test="viewprice != null">
         viewprice = #{viewprice,jdbcType=DECIMAL},
       </if>
       <if test="downprice != null">
         downprice = #{downprice,jdbcType=DECIMAL},
-      </if>
-     
-      <if test="photographerprofitrate != null">
-        photographerProfitRate = #{photographerprofitrate,jdbcType=DECIMAL},
-      </if>
-      <if test="cover != null">
-        cover = #{cover,jdbcType=VARCHAR},
-      </if>
-      <if test="pages != null">
-        pages = #{pages,jdbcType=INTEGER},
-      </if>
-      <if test="ziplink != null">
-        ziplink = #{ziplink,jdbcType=VARCHAR},
-      </if>
-      <if test="sales != null">
-        sales = #{sales,jdbcType=INTEGER},
-      </if>
-      <if test="activityid != null">
-        activityID = #{activityid,jdbcType=INTEGER},
-      </if>
-      <if test="status != null">
-        status = #{status,jdbcType=TINYINT},
-      </if>
-      <if test="createdtime != null">
-        createdTime = #{createdtime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="publishtime != null">
-        publishTime = #{publishtime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="lastupdatetime != null">
-        lastUpdateTime = #{lastupdatetime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="reviewTime != null">
-        reviewTime = #{reviewTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="creator != null">
-        creator = #{creator,jdbcType=VARCHAR},
-      </if>
-      <if test="reviewer != null">
-        reviewer = #{reviewer,jdbcType=VARCHAR},
-      </if>
-      <if test="limitfree != null">
-        limitFree = #{limitfree,jdbcType=TINYINT},
-      </if>
-      <if test="recommend != null">
-        recommend = #{recommend,jdbcType=TINYINT},
-      </if>
-      <if test="qingdou != null">
-        qingdou = #{qingdou,jdbcType=INTEGER},
-      </if>
-      <if test="likeCount != null">
-        like_count = #{likeCount,jdbcType=INTEGER},
-      </if>
-      <if test="viewCount != null">
-        view_count = #{viewCount,jdbcType=INTEGER},
-      </if>
-      <if test="realPrice != null">
-        real_price = #{realPrice,jdbcType=DECIMAL},
-      </if>
-      <if test="description != null">
-        description = #{description,jdbcType=LONGVARCHAR},
-      </if>
-      <if test="unlockLV1 != null">
-        unlockLV1 = #{unlockLV1,jdbcType=VARCHAR},
-      </if>
-      <if test="level != null">
-        level = #{level,jdbcType=INTEGER},
-      </if>
-      <if test="controlLevel == 0">
-        controlLevel <![CDATA[>=]]> #{controlLevel,jdbcType=INTEGER},
-      </if>
-       <if test="controlLevel != 0">
-        controlLevel <![CDATA[=]]> #{controlLevel,jdbcType=INTEGER},
-      </if>
-      <if test="profitTotal != null">
-        profitTotal = #{profitTotal,jdbcType=DECIMAL},
-      </if>
-      <if test="modelProfitTotal != null">
-        modelProfitTotal = #{modelProfitTotal,jdbcType=DECIMAL},
-      </if>
-      <if test="photographerProfitTotal != null">
-        photographerProfitTotal = #{photographerProfitTotal,jdbcType=DECIMAL},
-      </if>
-      <if test="siteProfitTotal != null">
-        siteProfitTotal = #{siteProfitTotal,jdbcType=DECIMAL},
-      </if>
-      <if test="organProfitTotal != null">
-        organProfitTotal = #{organProfitTotal,jdbcType=DECIMAL},
-      </if>
-      <if test="recommendTime != null">
-        recommendTime = #{recommendTime,jdbcType=TIMESTAMP},
       </if>
     </set>
     where id = #{id,jdbcType=INTEGER}

@@ -50,6 +50,8 @@ public class PersonalWebsiteController {
     	int pageSizes = personalWebsite.getPageSize();
     	
     	Photoalbuminfo photoalbuminfosy = new Photoalbuminfo();
+    	photoalbuminfosy.setPageNo(starts);
+    	photoalbuminfosy.setPageSize(pageSizes);
         ArrayList<Photoalbuminfo>  photoalbuminfolst =	photoAlbumService.queryBuminfo(photoalbuminfosy,starts*pageSizes,pageSizes);//图集信息
          /*
           * 循环图集信息

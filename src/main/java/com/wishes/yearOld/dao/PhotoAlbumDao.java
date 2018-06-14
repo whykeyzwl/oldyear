@@ -85,7 +85,7 @@ public interface PhotoAlbumDao {
     ArrayList<Photoalbuminfo> queryBuminfo(Photoalbuminfo photoalbuminfo);
     /**
      * 查询用户图集下面的图片
-     * @param photoalbumId
+     * @param photoalbumIdupdateByPrimaryKeySelective
      * @return
      */
     ArrayList<Piclist> queryPiclist(@Param("photoalbumId")Integer photoalbumId);
