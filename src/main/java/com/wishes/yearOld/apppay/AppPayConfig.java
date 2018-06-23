@@ -54,6 +54,11 @@ public class AppPayConfig {
      * 统一下单接口(wechat)
      */
     public static final String WECHAT_ORDER = "https://api.mch.weixin.qq.com/pay/unifiedorder";
+    
+    /**
+     * 企业付款(wechat)
+     */
+    public static final String WECHAT_COMPANY_PAY = "https://api.mch.weixin.qq.com/mmpaymkttransfers/promotion/transfers";
 
     /**
      * 支付结果通知url
