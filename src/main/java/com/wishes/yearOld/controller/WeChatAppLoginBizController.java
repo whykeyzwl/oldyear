@@ -141,28 +141,27 @@ public class WeChatAppLoginBizController {
 	                    logger.info("userInfo = "+ userInfoStr);  
 	                    JSONObject userInfoObj = JSON.parseObject(userInfoStr);  
 	                    //判断用户是否注册过
-	                    user = userService.findByLoginId(userInfoObj.getString("unionId"), (byte) 2);
+	                    user = userService.findByLoginId(userInfoObj.getString("openid"), (byte) 2);
 	                    if(user == null){//未注册,获取用户信息,注册直接登录
 	                        //调用get_user_info接口获取用户信息
 	                        String nickname = userInfoObj.getString("nickName");
 	                        logger.info("nickname:"+nickname);
-	                        logger.info("unionId:"+userInfoObj.getString("unionId"));
+	                        logger.info("openid:"+userInfoObj.getString("openid"));
 	                        String sex = userInfoObj.getString("gender");
 	                        logger.info("sex:"+sex);
 	                        String face = userInfoObj.getString("headimgurl");
 	                        logger.info("face:"+face);
-	                        userService.register(userInfoObj.getString("unionId"), (byte) 2, face, nickname);//用户注册
+	                        userService.register(userInfoObj.getString("openid"), (byte) 2, face, nickname);//用户注册
 	                        logger.info("-----wap端wx登录注册成功---------------");
-	                        user = userService.findByLoginId(userInfoObj.getString("unionId"), (byte) 2);
+	                        user = userService.findByLoginId(userInfoObj.getString("openid"), (byte) 2);
 	                        logger.info("-----wap端wx登录获取到用户信息----user="+user.toString()+"-----------------");
 	                    }
 	                    String openid = userInfoObj.getString("openid");
-	                    user.setUnionid(userInfoObj.getString("unionId"));
+	                    user.setUnionid(userInfoObj.getString("openid"));
 	                    user.setLastLoginTime(new Date());
 	                    userService.updateAtLogin(user);//更新登录信息
 	                    userService.updateAtLoginTimes(user);//更改用户的登录次数
-	                    user = userService.findByLoginId(userInfoObj.getString("unionId"), (byte) 1);
-	                    
+	                    user = userService.findByLoginId(userInfoObj.getString("openid"), (byte) 2);
 	                    String passportId = CodeGenerator.genPassportId(user.getLoginID(),user.getLoginType());
 	                    //将passportId与user信息存入缓存
 	                    userService.syncUserToCache(passportId, user);
