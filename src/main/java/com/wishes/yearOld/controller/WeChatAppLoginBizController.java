@@ -149,7 +149,7 @@ public class WeChatAppLoginBizController {
 	                        logger.info("openid:"+userInfoObj.getString("openid"));
 	                        String sex = userInfoObj.getString("gender");
 	                        logger.info("sex:"+sex);
-	                        String face = userInfoObj.getString("headimgurl");
+	                        String face = userInfoObj.getString("avatarUrl");
 	                        logger.info("face:"+face);
 	                        userService.register(userInfoObj.getString("openid"), (byte) 2, face, nickname);//用户注册
 	                        logger.info("-----wap端wx登录注册成功---------------");
