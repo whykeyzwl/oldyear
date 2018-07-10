@@ -190,8 +190,72 @@ public class WeChatAppLoginBizController {
 			return user;  
 	    }  
 	      
-	      
-	      
+	    @RequestMapping("/authorUser.json")
+	    @ResponseBody
+	    public String authorUser(HttpServletRequest request)  
+	    {  
+	    	HttpSession session = request.getSession();
+	    	User user=null;
+	        //获取 session_key 和 openId  
+	        String url = "https://api.weixin.qq.com/sns/jscode2session?appid="+APPID+"&secret="+SECRET+"&js_code="+request.getParameter("code")+"&grant_type=authorization_code";  
+	        RestTemplate restTemplate = new RestTemplate();  
+	        ResponseEntity<String>  responseEntity = restTemplate.exchange(url, HttpMethod.GET, null, String.class); 
+            String sessionData="";
+	        if(responseEntity != null && responseEntity.getStatusCode() == HttpStatus.OK)  
+	        {  
+	            sessionData = responseEntity.getBody();  
+	         }
+	              
+
+			return sessionData;  
+	    }  
+	    @RequestMapping("/getuserInfo.json")
+	    @ResponseBody
+	    public User userInfo(HttpServletRequest request)  
+	    {  
+	    	HttpSession session = request.getSession();
+	    	User user=null;
+	
+	            String openId = request.getParameter("openid");  
+	            logger.info("-----openId---------------"+openId);
+	                    //判断用户是否注册过
+	                    user = userService.findByLoginId(openId, (byte) 2);
+	                    if(user == null){//未注册,获取用户信息,注册直接登录
+	                        //调用get_user_info接口获取用户信息
+	                        String nickname = request.getParameter("nickName");
+	                        logger.info("nickname:"+nickname);
+	                        logger.info("openid:"+openId);
+	                        String sex = request.getParameter("gender");
+	                        logger.info("sex:"+sex);
+	                        String face = request.getParameter("face");
+	                        logger.info("face:"+face);
+	                        userService.register(openId, (byte) 2, face, nickname);//用户注册
+	                        logger.info("-----wap端wx登录注册成功---------------");
+	                        user = userService.findByLoginId(openId, (byte) 2);
+	                        logger.info("-----wap端wx登录获取到用户信息----user="+user.toString()+"-----------------");
+	                    }
+	                    user.setUnionid(openId);
+	                    user.setLastLoginTime(new Date());
+	                    userService.updateAtLogin(user);//更新登录信息
+	                    userService.updateAtLoginTimes(user);//更改用户的登录次数
+	                    user = userService.findByLoginId(openId, (byte) 2);
+	                    String passportId = CodeGenerator.genPassportId(user.getLoginID(),user.getLoginType());
+	                    //将passportId与user信息存入缓存
+	                    userService.syncUserToCache(passportId, user);
+	                    passportIdy=passportId;
+	                    user.setPassportId(passportId);
+	                    session.setAttribute("user", user);//把用户放入session
+	                    MDC.put("userId",user.getId().toString());
+	                    String userName = user.getNickName();
+	                    MDC.put("userName",userName);
+	                    MDC.put("logActionType","1");
+	                   /* MDC.put("logSourceUrl",req.getRequestURL().toString());
+	                    MDC.put("logIP", NetworkUtil.getIpAddress(request));*/
+	                    MDC.put("logSourceType","5");
+	                    
+	                    return user;  
+	  
+	    }  
 	    private byte[] decrypt(byte[] content, byte[] keyByte, byte[] ivByte) throws InvalidAlgorithmParameterException {  
 	        initialize();  
 	        try {  
