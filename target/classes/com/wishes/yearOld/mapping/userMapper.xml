@@ -42,6 +42,15 @@
             <if test="unionid != null">
                 unionid,
             </if>
+             <if test="province != null">
+                province,
+            </if>
+            <if test="city != null">
+                city,
+            </if>
+            <if test="sex != null">
+                sex,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="mobile != null">
@@ -79,6 +88,15 @@
             </if>
             <if test="unionid != null">
                 #{unionid},
+            </if>
+            <if test="province != null">
+                #{province},
+            </if>
+            <if test="city != null">
+                #{city},
+            </if>
+            <if test="sex != null">
+                #{sex},
             </if>
         </trim>
     </insert>

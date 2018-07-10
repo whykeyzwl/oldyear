@@ -74,7 +74,8 @@ import org.springframework.web.client.RestTemplate;
 
 
 import com.alibaba.fastjson.JSON;  
-import com.alibaba.fastjson.JSONObject;  
+import com.alibaba.fastjson.JSONObject;
+import com.tmg.utils.StringUtils;
 import com.wishes.yearOld.common.CodeGenerator;
 import com.wishes.yearOld.common.HmacUtil;
 import com.wishes.yearOld.common.NetworkUtil;
@@ -143,25 +144,46 @@ public class WeChatAppLoginBizController {
 	                    //判断用户是否注册过
 	                    user = userService.findByLoginId(userInfoObj.getString("openid"), (byte) 2);
 	                    if(user == null){//未注册,获取用户信息,注册直接登录
+	                    	User usery = new User();
 	                        //调用get_user_info接口获取用户信息
 	                        String nickname = userInfoObj.getString("nickName");
 	                        logger.info("nickname:"+nickname);
-	                        logger.info("openid:"+userInfoObj.getString("openid"));
+	                        if(StringUtils.isNotBlank(nickname)) {
+	                        	usery.setNickName(nickname);
+	                        }
+	                        logger.info("openid:"+openId);
+	                        usery.setLoginID(openId);
+	                        usery.setUnionid(openId);
 	                        String sex = userInfoObj.getString("gender");
+	                        if(StringUtils.isNotBlank(sex)) {
+	                        	usery.setSex(sex);
+	                        }
 	                        logger.info("sex:"+sex);
 	                        String face = userInfoObj.getString("avatarUrl");
+	                        if(StringUtils.isNotBlank(face)) {
+	                        	usery.setFace(face);
+	                        }
 	                        logger.info("face:"+face);
-	                        userService.register(userInfoObj.getString("openid"), (byte) 2, face, nickname);//用户注册
+	                        String city = userInfoObj.getString("city");
+	                        if(StringUtils.isNotBlank(city)) {
+	                        	usery.setCity(city);
+	                        }
+	                        String province = userInfoObj.getString("province");
+	                        if(StringUtils.isNotBlank(province)) {
+	                        	usery.setProvince(province);;
+	                        }
+	                        usery.setLoginType( (byte) 2);
+	                        userService.register(usery);//用户注册
 	                        logger.info("-----wap端wx登录注册成功---------------");
-	                        user = userService.findByLoginId(userInfoObj.getString("openid"), (byte) 2);
+	                        user = userService.findByLoginId(openId, (byte) 2);
 	                        logger.info("-----wap端wx登录获取到用户信息----user="+user.toString()+"-----------------");
 	                    }
-	                    String openid = userInfoObj.getString("openid");
-	                    user.setUnionid(userInfoObj.getString("openid"));
+	                    String openid = openId;
+	                    user.setUnionid(openId);
 	                    user.setLastLoginTime(new Date());
 	                    userService.updateAtLogin(user);//更新登录信息
 	                    userService.updateAtLoginTimes(user);//更改用户的登录次数
-	                    user = userService.findByLoginId(userInfoObj.getString("openid"), (byte) 2);
+	                    user = userService.findByLoginId(openId, (byte) 2);
 	                    String passportId = CodeGenerator.genPassportId(user.getLoginID(),user.getLoginType());
 	                    //将passportId与user信息存入缓存
 	                    userService.syncUserToCache(passportId, user);
