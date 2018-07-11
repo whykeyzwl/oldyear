@@ -457,7 +457,7 @@
    </update>
    
    <update id="updateAtLoginTimes" parameterType="com.wishes.yearOld.model.User">
-        UPDATE tgod_usercountinfo set  login_times = login_times+1 where id=#{id}
+        UPDATE tgod_user set  login_times = login_times+1 where id=#{id}
    </update>
 
     <update id="addQingdou" parameterType="map">

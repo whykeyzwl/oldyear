@@ -142,7 +142,7 @@ public class WeChatAppLoginBizController {
 	                    logger.info("userInfo = "+ userInfoStr);  
 	                    JSONObject userInfoObj = JSON.parseObject(userInfoStr);  
 	                    //判断用户是否注册过
-	                    user = userService.findByLoginId(userInfoObj.getString("openid"), (byte) 2);
+	                    user = userService.findByLoginId(openId, (byte) 2);
 	                    if(user == null){//未注册,获取用户信息,注册直接登录
 	                    	User usery = new User();
 	                        //调用get_user_info接口获取用户信息
@@ -173,6 +173,9 @@ public class WeChatAppLoginBizController {
 	                        	usery.setProvince(province);;
 	                        }
 	                        usery.setLoginType( (byte) 2);
+	                        usery.setRegisterTime(new Date());
+	                        usery.setLastLoginTime(new Date());
+	                        usery.setBeginTime(new Date());
 	                        userService.register(usery);//用户注册
 	                        logger.info("-----wap端wx登录注册成功---------------");
 	                        user = userService.findByLoginId(openId, (byte) 2);

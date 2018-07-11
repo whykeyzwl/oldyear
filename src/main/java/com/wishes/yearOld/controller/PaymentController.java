@@ -575,7 +575,7 @@ public class PaymentController {
         	String results =PayUtil.httpRequest(url, "POST", param);
         	// 将解析结果存储在HashMap中
         	Map mapResult = new HashMap();
-        	InputStream in=new ByteArrayInputStream(results.getBytes()); 
+        	InputStream in=new ByteArrayInputStream(results.getBytes("utf-8")); 
         	// 读取输入流
         	SAXReader reader = new SAXReader();
         	Document document = reader.read(in);
