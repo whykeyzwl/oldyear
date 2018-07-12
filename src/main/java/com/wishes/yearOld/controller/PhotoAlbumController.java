@@ -224,7 +224,7 @@ public class PhotoAlbumController {
         }
 
         GodViewLikeVO likeVO =  new GodViewLikeVO();
-        User user = (User)request.getAttribute("user");
+        User user = (User)request.getSession().getAttribute("user");
         int userId = user.getId();
         likeVO.setUserId(userId);
         likeVO.setLikeId(albumId);

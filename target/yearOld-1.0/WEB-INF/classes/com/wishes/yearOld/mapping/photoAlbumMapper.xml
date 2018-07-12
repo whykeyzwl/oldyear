@@ -113,12 +113,12 @@
                 select *,@rowNum:=@rowNum+1 as rowNo from tgod_photoalbum where description like '%${keyword}%' and status=3 union
                 select *,@rowNum:=@rowNum+1 as rowNo from tgod_photoalbum where modelName like '%${keyword}%' and status=3
             ) r
-            INNER JOIN tgod_user u ON (u.user_group = 1 AND u.id = r.modelID )
+            INNER JOIN tgod_user u ON ( u.id = r.modelID )
             group by r.id order by r.rowNo
         </if>
         <if test="keyword == null or keyword == ''">
             SELECT r.* FROM tgod_photoalbum r
-            INNER JOIN tgod_user u ON (u.user_group = 1 AND u.id = r.modelID)
+            INNER JOIN tgod_user u ON ( u.id = r.modelID)
             where r.status=3
                 <if test="modelId != null">
                     and r.modelid=#{modelId}
@@ -188,7 +188,7 @@
         FROM 
         tgod_photoalbum r left join tgod_albumcountinfo t
         on r.id =t.id
-        INNER JOIN tgod_user u ON (u.user_group = 1 AND u.id = r.modelID )
+        INNER JOIN tgod_user u ON ( u.id = r.modelID )
         WHERE r.id=#{id}
     </select>
 
@@ -241,7 +241,7 @@
         FROM 
         tgod_photoalbum r left join tgod_albumcountinfo t
         on r.id =t.id
-        INNER JOIN tgod_user u ON (u.user_group = 1 AND u.id = r.modelID)
+        INNER JOIN tgod_user u ON ( u.id = r.modelID)
         <include refid="PhotoalbumWhere"/>
         <if test="sortField != null and sortField != ''">
             order by ${sortField} ${sortType}
@@ -254,7 +254,7 @@
     <select id="getHomeAlbums" parameterType="com.wishes.yearOld.model.PhotoAlbum" resultMap="PhotoAlbum">
         SELECT t.*,u.face face,c.description AS cert,f.view_count,f.sales,f.like_count,f.downcount,f.click_count from tgod_photoalbum t
          left join  tgod_albumcountinfo f on t.id=f.id
-        INNER JOIN tgod_user u ON (u.user_group = 1 AND u.id = t.modelID )
+        INNER JOIN tgod_user u ON ( u.id = t.modelID )
         LEFT JOIN tgod_certification c ON u.certification = c.id
         where t.status = 1
       <!--   AND (
@@ -288,7 +288,7 @@
     <select id="getHomeAlbumsHot" parameterType="com.wishes.yearOld.model.PhotoAlbum" resultMap="PhotoAlbum">
         SELECT t.*,u.face face,c.description AS cert from tgod_photoalbum t
         left join  tgod_albumcountinfo f on t.id=f.id
-        INNER JOIN tgod_user u ON (u.user_group = 1 AND u.id = t.modelID )
+        INNER JOIN tgod_user u ON ( u.id = t.modelID )
         LEFT JOIN tgod_certification c ON u.certification = c.id
         where t.status = 1
          AND (
@@ -322,7 +322,7 @@
     <select id="getHomeAlbumsRand" parameterType="com.wishes.yearOld.model.PhotoAlbum" resultMap="PhotoAlbum">
         SELECT t.*,u.face,f.view_count,f.sales,f.like_count,f.downcount,f.click_count from tgod_photoalbum t
         left join  tgod_albumcountinfo f on t.id=f.id
-        INNER JOIN tgod_user u ON (u.user_group = 1 AND u.id = t.modelID )
+        INNER JOIN tgod_user u ON ( u.id = t.modelID )
         where t.status = 1
         <!-- AND (t.recommend = 1 OR (t.limitfree = 1 OR t.price3 = 0)) -->
         <if test="controlLevel == 0">
@@ -341,7 +341,7 @@
     <!-- 根据模特ID取得图集封面 -->
     <select id="queryCoverByAlbumId" resultType="java.util.HashMap">
         SELECT p.path as cover from tgod_photoalbum t
-        INNER JOIN tgod_user u ON (u.user_group = 1 AND u.id = t.modelID)
+        INNER JOIN tgod_user u ON ( u.id = t.modelID)
         INNER JOIN tgod_photo p on p.albumId = t.id
         where t.id = #{albumId} and p.page=5 GROUP BY p.albumId ORDER BY p.page
     </select>
@@ -391,7 +391,7 @@
         p.cover as coverUrl,photo.path as firstPhoto
         from tgod_album_view_log log
         join tgod_photoalbum p on p.id=log.album_id
-        INNER JOIN tgod_user u ON (u.user_group = 1 AND u.id = p.modelID )
+        INNER JOIN tgod_user u ON ( u.id = p.modelID )
         left join tgod_photo photo on p.id=photo.albumId and photo.page=1
         where user_id = #{userId} order by view_time desc) t
         group by t.album_id order by t.view_time desc
@@ -568,7 +568,7 @@
         r.cover
         FROM tgod_photoalbum r
         left join tgod_albumcountinfo t on (r.id =t.id)
-        INNER JOIN tgod_user u ON (u.user_group = 1 AND u.id = r.modelID   )
+        INNER JOIN tgod_user u ON ( u.id = r.modelID   )
            <where>
             r.status = 1
             <if test="activityId != null">
@@ -784,7 +784,7 @@
          0 as buy
         </if>
         from tgod_photoalbum t
-        INNER JOIN tgod_user u ON (u.user_group = 1 AND u.id = t.modelID)
+        INNER JOIN tgod_user u ON ( u.id = t.modelID)
         where t.id=#{albumId}
     </select>
 </mapper>

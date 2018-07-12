@@ -561,18 +561,22 @@ public class PaymentController {
         	// 除去数组中的空值和签名参数
         	Map sPara = PayUtil.paraFilter(params);
         	String prestr = PayUtil.createLinkString(sPara); // 把数组所有元素，按照“参数=参数值”的模式用“&”字符拼接成字符串
+        	logger.info(prestr);
         	String key = "&key="+AppPayConfig.WECHATXCX_PREPAY_ID; // 商户支付密钥
         	//MD5运算生成签名
         	String mysign = PayUtil.sign(prestr, key, "utf-8").toUpperCase();
+        	logger.info(mysign);
         	params.put("sign", mysign);
         	//打包要发送的xml
         	String respXml = XmlUtil.createXml(params);
+        	logger.info(respXml);
         	// 打印respXml发现，得到的xml中有“__”不对，应该替换成“_”
         	respXml = respXml.replace("__", "_");
-        	
+        	logger.info(respXml);
         	String param = respXml;
         	//String result = SendRequestForUrl.sendRequest(url, param);//发起请求
         	String results =PayUtil.httpRequest(url, "POST", param);
+        	logger.info(results);
         	// 将解析结果存储在HashMap中
         	Map mapResult = new HashMap();
         	InputStream in=new ByteArrayInputStream(results.getBytes("utf-8")); 
@@ -586,14 +590,17 @@ public class PaymentController {
         	for (Element element : elementLists) {
             	mapResult.put(element.getName(), element.getText());
             }
+        	
         	// 返回信息
         	String return_codes = (String) mapResult.get("return_code");//返回状态码
         	String return_msgs = (String) mapResult.get("return_msg");//返回信息
         	
         	//JSONObject JsonObject=new JSONObject() ;
         	if(return_codes=="SUCCESS"||return_codes.equals(return_codes)){
+        		logger.info("mapResult=============="+mapResult);
         	// 业务结果
         	String prepay_id = (String) mapResult.get("prepay_id");//返回的预付单信息
+        	
         	String nonceStr=AppPayCore.getNonceStr();
         	datas.put("prepayIds", prepay_id+"");
             Long timeStamp= System.currentTimeMillis()/1000;
