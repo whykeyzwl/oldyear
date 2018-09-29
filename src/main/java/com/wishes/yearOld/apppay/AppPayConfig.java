@@ -85,7 +85,7 @@ public class AppPayConfig {
      * 通知url必须为直接可访问的url，不能携带参数(wechat)
      * TODO 修改域名
      */
-    public static final String WECHATXCX_NOTIFY_URL = "http://47.95.207.69/payment/wechatApplet_order_notify.do";
+    public static final String WECHATXCX_NOTIFY_URL = "https://www.yearold.xyz/payment/wechatApplet_order_notify.do";
 
     /**
      * 查询订单接口(wechat)
