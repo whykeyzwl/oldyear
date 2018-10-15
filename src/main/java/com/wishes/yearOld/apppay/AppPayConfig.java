@@ -49,7 +49,7 @@ public class AppPayConfig {
      * 微信小程序商户秘钥
      * 
      */
-    public static final String WECHATXCX_PREPAY_ID = "64b7d69489aceaa87e2232e995e0af03"; 
+    public static final String WECHATXCX_PREPAY_ID = "kgasdf90nhl98qwgfvkgasdf90nhlSDF"; 
     /**
      * 统一下单接口(wechat)
      */
